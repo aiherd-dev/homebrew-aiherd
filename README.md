@@ -12,19 +12,42 @@ brew trust aiherd-dev/aiherd      # required once: this is a third-party tap
 brew install --cask aiherd
 ```
 
-Installs the `aih` CLI and Aiherd.app. Supports macOS arm64 (Apple Silicon) and
+That installs the `aih` CLI onto your `PATH` and Aiherd.app into
+`/Applications`. Universal build: macOS 14+ on arm64 (Apple Silicon) and
 x86_64 (Intel).
 
-## Gatekeeper / signing
+Then just open Aiherd.app — it launches `aih serve` itself over a Unix socket,
+so no TCP port is taken. To also reach the dashboard from a phone or browser,
+run `aih serve -p 8080` yourself.
 
-Both the `aih` CLI and Aiherd.app are signed with a Developer ID certificate
-(team `QNHETPLPPW`), built with the hardened runtime, and notarized by Apple.
-Aiherd.app has its notarization ticket **stapled**, so it validates offline.
+Nothing else is required: no `--no-quarantine`, no `xattr` incantation, and no
+trip through **System Settings → Privacy & Security** to approve a blocked app.
+`brew trust` above is about letting Homebrew load a third-party tap's Ruby, not
+about Gatekeeper.
 
-A bare executable cannot carry a stapled ticket, so the cask strips the
-quarantine flag from `aih` on install to avoid an online Gatekeeper check on
-first run. If you install the CLI by hand instead and macOS blocks it:
+## Signing and notarization
+
+Both artifacts are signed with a Developer ID certificate (team `QNHETPLPPW`),
+built with the **hardened runtime**, and **notarized by Apple**:
+
+- **Aiherd.app** — notarization ticket is *stapled* into the bundle, so
+  Gatekeeper validates it offline, with no network round-trip on first launch.
+  The bundled `uv` helper is signed too, which notarization requires.
+- **`aih`** — signed and notarized, but a bare Mach-O has nowhere to staple a
+  ticket, so Gatekeeper would need an online check the first time it runs. The
+  cask therefore clears the quarantine flag on the CLI at install time.
+
+Verify any of it yourself:
 
 ```sh
-xattr -dr com.apple.quarantine "$(brew --prefix)/bin/aih"
+codesign -dv --verbose=4 /Applications/Aiherd.app   # expect flags=0x10000(runtime)
+spctl -a -vvv /Applications/Aiherd.app              # expect: accepted, source=Notarized Developer ID
+xcrun stapler validate /Applications/Aiherd.app     # expect: worked
+```
+
+If you install the CLI by hand from the release tarball rather than via the
+cask, macOS may quarantine it; clear that with:
+
+```sh
+xattr -dr com.apple.quarantine ./aih
 ```
