@@ -17,14 +17,14 @@ x86_64 (Intel).
 
 ## Gatekeeper / signing
 
-The binary is **unsigned and un-notarized**, so macOS quarantines downloaded
-copies. The cask strips the quarantine flag on install, so it should just run.
-If Gatekeeper still blocks it, allow it once via
-**System Settings → Privacy & Security → "Open Anyway"**, or run:
+Both the `aih` CLI and Aiherd.app are signed with a Developer ID certificate
+(team `QNHETPLPPW`), built with the hardened runtime, and notarized by Apple.
+Aiherd.app has its notarization ticket **stapled**, so it validates offline.
+
+A bare executable cannot carry a stapled ticket, so the cask strips the
+quarantine flag from `aih` on install to avoid an online Gatekeeper check on
+first run. If you install the CLI by hand instead and macOS blocks it:
 
 ```sh
 xattr -dr com.apple.quarantine "$(brew --prefix)/bin/aih"
 ```
-
-The permanent fix is a Developer ID signature + Apple notarization (requires a
-paid Apple Developer account); not yet applied.

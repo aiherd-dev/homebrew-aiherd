@@ -18,22 +18,17 @@ cask "aiherd" do
   # is no Python/uv/venv dependency.
   binary "aih"
 
-  # Both are unsigned/un-notarized, so a downloaded copy is quarantined and
-  # Gatekeeper blocks it ("Apple could not verify..."). Strip the quarantine flag
-  # on install so they run. Replace this with proper Developer ID notarization
-  # once a signing identity is available.
+  # Both artifacts are Developer ID signed with a hardened runtime and notarized.
+  # Aiherd.app has its notarization ticket stapled, so it validates offline and
+  # needs no help here. A bare Mach-O cannot be stapled, so quarantined `aih`
+  # would force an online Gatekeeper lookup on first run (and fail offline) —
+  # strip the flag for the CLI only.
   postflight do
     system_command "/usr/bin/xattr",
                    args: ["-dr", "com.apple.quarantine", "#{staged_path}/aih"]
-    system_command "/usr/bin/xattr",
-                   args: ["-dr", "com.apple.quarantine", "#{staged_path}/Aiherd.app"]
   end
 
   caveats <<~EOS
-    aiherd ships an unsigned CLI and a native app; this cask removes the
-    macOS quarantine flag on install. If Gatekeeper still blocks them, allow once
-    via System Settings -> Privacy & Security -> "Open Anyway".
-
     Just open Aiherd.app — it starts `aih serve` itself
     (over a Unix socket; no TCP port is taken). To also reach the dashboard
     from a phone/browser, run `aih serve -p 8080` yourself.
