@@ -12,42 +12,60 @@ brew trust aiherd-dev/aiherd      # required once: this is a third-party tap
 brew install --cask aiherd
 ```
 
-That installs the `aih` CLI onto your `PATH` and Aiherd.app into
-`/Applications`. Universal build: macOS 14+ on arm64 (Apple Silicon) and
-x86_64 (Intel).
+The cask runs a signed installer package, which lays down:
+
+| Path | What |
+|---|---|
+| `/Applications/Aiherd.app` | native SwiftUI dashboard (universal) |
+| `/usr/local/bin/aih` | the CLI; question-detection and search models are compiled in |
+| `/usr/local/share/aiherd/` | bundled CPython + mlx-lm wheels + uv, Apple Silicon only |
 
 Then just open Aiherd.app — it launches `aih serve` itself over a Unix socket,
 so no TCP port is taken. To also reach the dashboard from a phone or browser,
 run `aih serve -p 8080` yourself.
 
 Nothing else is required: no `--no-quarantine`, no `xattr` incantation, and no
-trip through **System Settings → Privacy & Security** to approve a blocked app.
-`brew trust` above is about letting Homebrew load a third-party tap's Ruby, not
-about Gatekeeper.
+trip through **System Settings → Privacy & Security**. `brew trust` above is
+about letting Homebrew load a third-party tap's Ruby, not about Gatekeeper.
+
+macOS 14 (Sonoma) or newer, on arm64 (Apple Silicon) or x86_64 (Intel).
+
+## What runs offline
+
+Everything except the summarizer's weights. The installer carries its own Python
+interpreter and the mlx-lm wheels, so the only thing a first run fetches is the
+LLM itself (~2 GB from Hugging Face), and only when the stable-terminal
+summarizer actually triggers. That feature needs Apple Silicon with ≥16 GB, so
+the Intel package ships without those assets.
+
+Point it at a different model, or turn it off, with `AIHERD_SUMMARIZER`:
+
+```sh
+AIHERD_SUMMARIZER=off aih serve                                # no LLM at all
+AIHERD_SUMMARIZER=mlx-community/Qwen3-14B-4bit aih serve        # bigger judge
+```
 
 ## Signing and notarization
 
-Both artifacts are signed with a Developer ID certificate (team `QNHETPLPPW`),
-built with the **hardened runtime**, and **notarized by Apple**:
-
-- **Aiherd.app** — notarization ticket is *stapled* into the bundle, so
-  Gatekeeper validates it offline, with no network round-trip on first launch.
-  The bundled `uv` helper is signed too, which notarization requires.
-- **`aih`** — signed and notarized, but a bare Mach-O has nowhere to staple a
-  ticket, so Gatekeeper would need an online check the first time it runs. The
-  cask therefore clears the quarantine flag on the CLI at install time.
+The installer, the app, the CLI and every bundled binary are signed with a
+Developer ID certificate (team `QNHETPLPPW`) and built with the **hardened
+runtime**. Both the `.pkg` and Aiherd.app carry **stapled** notarization
+tickets, so Gatekeeper validates them with no network round-trip. Installer
+payloads also aren't quarantined the way an archive's contents are, so the CLI
+needs no unquarantining either.
 
 Verify any of it yourself:
 
 ```sh
-codesign -dv --verbose=4 /Applications/Aiherd.app   # expect flags=0x10000(runtime)
-spctl -a -vvv /Applications/Aiherd.app              # expect: accepted, source=Notarized Developer ID
-xcrun stapler validate /Applications/Aiherd.app     # expect: worked
+pkgutil --check-signature ~/Downloads/aiherd-*.pkg    # expect: signed by a developer certificate
+codesign -dv --verbose=4 /Applications/Aiherd.app     # expect: flags=0x10000(runtime)
+spctl -a -vvv /Applications/Aiherd.app                # expect: accepted, source=Notarized Developer ID
+xcrun stapler validate /Applications/Aiherd.app       # expect: worked
 ```
 
-If you install the CLI by hand from the release tarball rather than via the
-cask, macOS may quarantine it; clear that with:
+## Uninstall
 
 ```sh
-xattr -dr com.apple.quarantine ./aih
+brew uninstall --cask aiherd          # removes the app, CLI and bundled assets
+brew uninstall --zap --cask aiherd    # also removes the text index and logs
 ```
