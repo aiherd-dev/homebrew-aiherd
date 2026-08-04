@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AIHerd — watch every coding agent in one dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="AIHerd watches your terminal panes, spots when a CLI coding agent is waiting on you, and lets you answer it from one dashboard.">
+
+<style>
+  :root {
+    --bg: #fbfbfa;
+    --panel: #ffffff;
+    --ink: #1a1a1c;
+    --ink-soft: #5c5c66;
+    --line: #e4e4e8;
+    --accent: #2f6f4f;
+    --accent-soft: #eaf3ee;
+    --code-bg: #f4f4f2;
+    --shadow: 0 1px 2px rgba(0,0,0,.05), 0 8px 24px rgba(0,0,0,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14141a;
+      --panel: #1c1c24;
+      --ink: #edecf0;
+      --ink-soft: #a2a2b0;
+      --line: #2e2e3a;
+      --accent: #7fd0a3;
+      --accent-soft: #1e2a24;
+      --code-bg: #101016;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14141a; --panel: #1c1c24; --ink: #edecf0; --ink-soft: #a2a2b0;
+    --line: #2e2e3a; --accent: #7fd0a3; --accent-soft: #1e2a24; --code-bg: #101016;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+  }
+  :root[data-theme="light"] {
+    --bg: #fbfbfa; --panel: #ffffff; --ink: #1a1a1c; --ink-soft: #5c5c66;
+    --line: #e4e4e8; --accent: #2f6f4f; --accent-soft: #eaf3ee; --code-bg: #f4f4f2;
+    --shadow: 0 1px 2px rgba(0,0,0,.05), 0 8px 24px rgba(0,0,0,.05);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    margin: 0;
+    padding: 0 20px 96px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; }
+
+  header { padding: 72px 0 48px; border-bottom: 1px solid var(--line); }
+  h1 { font-size: 2.9rem; letter-spacing: -.025em; margin: 0 0 .3em; font-weight: 640; }
+  .tagline { font-size: 1.3rem; color: var(--ink-soft); margin: 0 0 2em; max-width: 34em; }
+  .req { color: var(--ink-soft); font-size: .9rem; margin-top: 1.1em; }
+
+  h2 {
+    font-size: 1.45rem; letter-spacing: -.015em; font-weight: 620;
+    margin: 3.2em 0 .2em;
+  }
+  h2 + .sub { color: var(--ink-soft); margin: 0 0 1.4em; }
+  h3 { font-size: 1.05rem; margin: 2em 0 .3em; font-weight: 620; }
+
+  pre, code { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace; }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--line); border-radius: 10px;
+    padding: 14px 16px; overflow-x: auto; font-size: .875rem; line-height: 1.6;
+  }
+  p code, li code, td code {
+    background: var(--code-bg); border: 1px solid var(--line); border-radius: 5px;
+    padding: .08em .38em; font-size: .875em;
+  }
+  pre .c { color: var(--ink-soft); }
+
+  .install pre {
+    background: var(--accent-soft); border-color: var(--accent);
+    font-size: 1rem; padding: 18px 20px;
+  }
+
+  figure { margin: 0 0 2.4em; }
+  figure img {
+    display: block; width: 100%; height: auto; border-radius: 12px;
+    border: 1px solid var(--line); box-shadow: var(--shadow); background: var(--panel);
+  }
+  figcaption { color: var(--ink-soft); font-size: .9rem; margin-top: .7em; }
+
+  .feature { border-top: 1px solid var(--line); padding-top: 1.6em; margin-top: 2.4em; }
+  .feature:first-of-type { border-top: 0; }
+
+  table { border-collapse: collapse; width: 100%; font-size: .93rem; margin: 1em 0; }
+  th, td { text-align: left; padding: .55em .7em; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-weight: 620; }
+  .scroll { overflow-x: auto; }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  footer { margin-top: 4.5em; padding-top: 1.6em; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: .9rem; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header>
+  <h1>AIHerd</h1>
+  <p class="tagline">You have six coding agents running in six panes. Five are
+  working and one is blocked on a yes/no question. AIHerd tells you which.</p>
+
+  <div class="install">
+    <pre><code>brew install --cask aiherd-dev/aiherd/aiherd</code></pre>
+  </div>
+  <p class="req">macOS 14 (Sonoma) or newer · Apple Silicon or Intel · signed,
+  notarized and stapled — no <code>--no-quarantine</code>, no <code>xattr</code>,
+  no trip through System Settings.</p>
+</header>
+
+<h2>What it does</h2>
+<p class="sub">One dashboard over every terminal pane on the machine.</p>
+
+<p>AIHerd watches the PTY devices your terminals are attached to, notices which
+ones have a CLI coding agent on them — <code>claude</code>, <code>codex</code>,
+<code>agy</code>, <code>grok</code> and a dozen others — and reads what is on
+each screen. A small classifier compiled into the binary scores every screen for
+"is this waiting on a human?", so a pane that has stopped to ask permission
+surfaces immediately instead of sitting unnoticed behind three other windows.</p>
+
+<p>It works across terminal programs. iTerm2, Terminal.app, tmux and cmux panes
+all land in the same list, because the thing being watched is the TTY, not the
+terminal emulator.</p>
+
+<h2>Screenshots</h2>
+<p class="sub">One session, three agents, three different terminal programs:
+<code>claude</code> in a cmux pane, <code>codex</code> in iTerm2 and
+<code>grok</code> in Terminal.app.</p>
+
+<figure>
+  <img src="img/app.png" alt="The AIHerd macOS app showing three agent panes, two flagged as waiting on a question">
+  <figcaption>The native app. Two panes carry a <strong>question</strong> badge —
+  codex is asking whether to implement its plan, grok wants directory trust — and
+  AIHerd has pulled the available answers out of each screen. The third has gone
+  quiet, so it shows a summary instead.</figcaption>
+</figure>
+
+<figure>
+  <img src="img/dashboard.png" alt="The same three panes in the browser dashboard, with one-line summaries across the top">
+  <figcaption>The same thing in a browser, from <code>aih serve -p 8080</code>.
+  The chips along the top are one line per pane, so you can read the state of
+  every agent without scrolling.</figcaption>
+</figure>
+
+<figure>
+  <img src="img/pane.png" alt="A single pane opened full width, with a command input and key-send buttons">
+  <figcaption>One pane, full width. Type into it, send arrow keys or Enter, turn
+  on nudging, or click straight into the screen.</figcaption>
+</figure>
+
+<figure>
+  <img src="img/search.png" alt="Semantic search results ranked by relevance, with an LLM judging pass running alongside">
+  <figcaption>Searching months of scrollback by meaning. Hits are ranked, and an
+  LLM pass judges each candidate session against the query as the results come
+  in.</figcaption>
+</figure>
+
+<h2>Features</h2>
+
+<div class="feature">
+  <h3>Spots the pane that is waiting on you</h3>
+  <p>An embedded question classifier scores each screen; panes that are blocked
+  on a prompt are called out. Nothing is sent anywhere — the model ships inside
+  the <code>aih</code> binary and runs locally.</p>
+</div>
+
+<div class="feature">
+  <h3>Answer without switching windows</h3>
+  <p>Type a reply, send a keypress, scroll, or click straight into any pane from
+  the dashboard. The pane behaves exactly as if you had focused its terminal and
+  typed there, because that is what happens underneath.</p>
+</div>
+
+<div class="feature">
+  <h3>Nudge a stalled agent</h3>
+  <p>Toggle nudging on a pane and AIHerd answers the routine prompts for you, so
+  an agent that would have blocked on a confirmation keeps going.</p>
+</div>
+
+<div class="feature">
+  <h3>Plain-language summaries of what each agent is doing</h3>
+  <p>Once a pane goes quiet, an LLM running in-process via llama.cpp writes a
+  short summary of what happened there. No Python, no <code>uv</code>, no venv:
+  the model runs inside <code>aih</code> itself, on Metal on Apple Silicon.</p>
+</div>
+
+<div class="feature">
+  <h3>Semantic search across every session</h3>
+  <p>Screens are indexed as you work, so you can search months of scrollback by
+  meaning rather than exact string — and jump to the matching point in the
+  stitched history of that pane. The search model is compiled in too.</p>
+</div>
+
+<div class="feature">
+  <h3>Start new agents from the dashboard</h3>
+  <p>Pick an agent and a working directory and AIHerd opens a pane for it.</p>
+</div>
+
+<div class="feature">
+  <h3>Reachable from your phone</h3>
+  <p>By default AIHerd binds only a Unix socket, so it takes no TCP port at all.
+  Pass <code>-p 8080</code> and the same dashboard is available in any browser on
+  your network.</p>
+</div>
+
+<h2>Usage</h2>
+
+<p>Open AIHerd.app and it starts <code>aih serve</code> itself over a Unix
+socket. Everything below is for driving it from a terminal instead.</p>
+
+<pre><code>aih                          <span class="c"># serve on the Unix socket (the default)</span>
+aih serve -p 8080            <span class="c"># also serve on a TCP port, for a phone or browser</span>
+aih serve claude             <span class="c"># only panes running a matching executable</span>
+aih find-terminals --no-monitor   <span class="c"># print the panes AIHerd can see, and their TTYs</span></code></pre>
+
+<h3>Narrowing to specific panes</h3>
+
+<p>Pass <code>--tty</code> to pin the dashboard to an exact set of panes and
+ignore every other terminal on the machine. Useful for a demo or a screenshot,
+where you want four known agents on screen and nothing else:</p>
+
+<pre><code><span class="c"># find the panes you care about</span>
+aih find-terminals --no-monitor
+
+<span class="c"># then show only those</span>
+aih serve -p 8080 --tty ttys002,ttys004,ttys007,ttys009</code></pre>
+
+<p>It takes bare names or <code>/dev/</code> paths, repeats
+(<code>--tty ttys002 --tty ttys004</code>) as well as comma-separated lists, and
+overrides pinned panes — so the set you name is exactly the set you get.</p>
+
+<h3>The summarizer</h3>
+
+<p>Summaries need Apple Silicon with 16 GB or more. On first use the model
+(~2.5 GB) downloads into
+<code>~/Library/Application Support/aiherd/models</code>, and the dashboard shows
+the progress on the pane that triggered it. Everything else works offline and
+without it.</p>
+
+<div class="scroll">
+<table>
+  <tr><th><code>AIHERD_SUMMARIZER</code></th><th>Effect</th></tr>
+  <tr><td><code>off</code></td><td>No LLM at all.</td></tr>
+  <tr><td><code>unsloth/Qwen3-14B-GGUF</code></td><td>A bigger judge. Any Hugging Face <strong>GGUF</strong> repo works; without a filename, <code>&lt;repo&gt;-Q4_K_M.gguf</code> is assumed.</td></tr>
+  <tr><td><code>unsloth/Qwen3-14B-GGUF:Qwen3-14B-Q5_K_M.gguf</code></td><td>An explicit file in that repo.</td></tr>
+</table>
+</div>
+
+<h2>What it installs</h2>
+
+<div class="scroll">
+<table>
+  <tr><th>Path</th><th>What</th></tr>
+  <tr><td><code>/Applications/AIHerd.app</code></td><td>Native SwiftUI dashboard, universal binary.</td></tr>
+  <tr><td><code>/usr/local/bin/aih</code></td><td>The CLI. Question-detection and search models are compiled in; the summarizer runs in-process via llama.cpp.</td></tr>
+</table>
+</div>
+
+<p>The installer, the app, the CLI and every bundled binary are signed with a
+Developer ID certificate (team <code>QNHETPLPPW</code>) and built with the
+hardened runtime. Both the <code>.pkg</code> and the app carry stapled
+notarization tickets, so Gatekeeper validates them with no network round-trip.
+Check for yourself:</p>
+
+<pre><code>pkgutil --check-signature ~/Downloads/aiherd-*.pkg  <span class="c"># signed by a developer certificate</span>
+codesign -dv --verbose=4 /Applications/AIHerd.app   <span class="c"># flags=0x10000(runtime)</span>
+spctl -a -vvv /Applications/AIHerd.app              <span class="c"># accepted, source=Notarized Developer ID</span>
+xcrun stapler validate /Applications/AIHerd.app     <span class="c"># worked</span></code></pre>
+
+<h2>Uninstall</h2>
+
+<pre><code>brew uninstall --cask aiherd         <span class="c"># app, CLI and bundled assets</span>
+brew uninstall --zap --cask aiherd   <span class="c"># also the text index, settings and logs</span></code></pre>
+
+<footer>
+  Installed from the <a href="https://github.com/aiherd-dev/homebrew-aiherd">aiherd-dev/aiherd</a> tap.
+</footer>
+
+</div>
+</body>
+</html>
