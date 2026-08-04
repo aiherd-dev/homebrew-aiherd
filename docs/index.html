@@ -96,6 +96,11 @@
   }
   figcaption { color: var(--ink-soft); font-size: .9rem; margin-top: .7em; }
 
+  figure video {
+    display: block; width: 100%; height: auto; border-radius: 12px;
+    border: 1px solid var(--line); box-shadow: var(--shadow); background: var(--panel);
+  }
+
   .feature { border-top: 1px solid var(--line); padding-top: 1.6em; margin-top: 2.4em; }
   .feature:first-of-type { border-top: 0; }
 
@@ -120,9 +125,7 @@
   <div class="install">
     <pre><code>brew install --cask aiherd-dev/aiherd/aiherd</code></pre>
   </div>
-  <p class="req">macOS 14 (Sonoma) or newer · Apple Silicon or Intel · signed,
-  notarized and stapled — no <code>--no-quarantine</code>, no <code>xattr</code>,
-  no trip through System Settings.</p>
+  <p class="req">macOS 14 (Sonoma) or newer · Apple Silicon or Intel</p>
 </header>
 </div>
 
@@ -190,6 +193,28 @@ terminal emulator.</p>
   the top of a screen pages back to the previous one, so a pane's history reads
   like a scrollback that outlives the process.</figcaption>
 </figure>
+
+<h2>Mouse support</h2>
+<p class="sub">Wheel and clicks go through to the real terminal, so a pane's own
+TUI responds as if you were sitting in front of it.</p>
+
+<figure>
+  <video src="img/mouse-scroll.mp4" controls muted loop playsinline preload="metadata"></video>
+  <figcaption>Scrolling up a claude pane from the dashboard. Once the screen is
+  at its top edge the wheel stops scrolling the view and is forwarded to the
+  terminal instead — the <code>↑ scroll sent</code> badge marks each tick that
+  went through, and claude's own scrollback moves.</figcaption>
+</figure>
+
+<figure>
+  <video src="img/mouse-click.mp4" controls muted loop playsinline preload="metadata"></video>
+  <figcaption>And clicks land too: pressing the pane's own <em>Jump to bottom</em>
+  control snaps it back to the live tail.</figcaption>
+</figure>
+
+<p>This one is terminal-specific. cmux forwards mouse events; iTerm2 and
+Terminal.app don't, and AIHerd says so on the button rather than letting you
+click into nothing. Everything else on this page works the same everywhere.</p>
 
 <h2>Features</h2>
 
