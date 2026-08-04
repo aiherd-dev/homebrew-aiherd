@@ -10,7 +10,7 @@ cask "aiherd" do
   desc "Watch terminal panes and auto-detect/auto-approve prompts"
   homepage "https://github.com/aiherd-dev/aiherd"
 
-  depends_on macos: ">= :sonoma"
+  depends_on macos: :sonoma
 
   # A signed, notarized and stapled installer laying down /Applications/
   # Aiherd.app and /usr/local/bin/aih. No Python: the summarizer LLM runs
@@ -21,14 +21,15 @@ cask "aiherd" do
   # notarization ticket, so this validates with no network at all.
   pkg "aiherd-#{version}-#{arch}-apple-darwin.pkg"
 
-  uninstall pkgutil: "ai.aiherd.suite",
+  # quit takes the app's bundle id, not the pkg id.
+  uninstall quit:    "com.elazarl.aiherd",
+            pkgutil: "ai.aiherd.suite",
             delete:  [
               "/Applications/Aiherd.app",
               "/usr/local/bin/aih",
               # Pre-0.3.1 installs staged CPython + mlx-lm wheels here.
               "/usr/local/share/aiherd",
-            ],
-            quit:    "com.elazarl.aiherd"   # the app's bundle id, not the pkg id
+            ]
 
   # The text index, settings and downloaded model weights the CLI builds at
   # runtime; `brew uninstall --zap` removes them, plain uninstall leaves them.

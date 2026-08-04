@@ -7,9 +7,7 @@ question-detection model is embedded in the binary (no Python/uv/venv needed).
 ## Install
 
 ```sh
-brew tap aiherd-dev/aiherd
-brew trust aiherd-dev/aiherd      # required once: this is a third-party tap
-brew install --cask aiherd
+brew install --cask aiherd-dev/aiherd/aiherd
 ```
 
 The cask runs a signed installer package, which lays down:
@@ -23,9 +21,11 @@ Then just open Aiherd.app — it launches `aih serve` itself over a Unix socket,
 so no TCP port is taken. To also reach the dashboard from a phone or browser,
 run `aih serve -p 8080` yourself.
 
-Nothing else is required: no `--no-quarantine`, no `xattr` incantation, and no
-trip through **System Settings → Privacy & Security**. `brew trust` above is
-about letting Homebrew load a third-party tap's Ruby, not about Gatekeeper.
+Nothing else is required: no `brew tap`, no `brew trust`, no `--no-quarantine`,
+no `xattr` incantation, and no trip through **System Settings → Privacy &
+Security**. The fully-qualified `aiherd-dev/aiherd/aiherd` taps the repo and
+trusts *this cask only* (Homebrew 6 gates third-party tap Ruby, unrelated to
+Gatekeeper); a later commit adding a different cask to the tap stays untrusted.
 
 macOS 14 (Sonoma) or newer, on arm64 (Apple Silicon) or x86_64 (Intel).
 
