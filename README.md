@@ -17,8 +17,7 @@ The cask runs a signed installer package, which lays down:
 | Path | What |
 |---|---|
 | `/Applications/Aiherd.app` | native SwiftUI dashboard (universal) |
-| `/usr/local/bin/aih` | the CLI; question-detection and search models are compiled in |
-| `/usr/local/share/aiherd/` | bundled CPython + mlx-lm wheels + uv, Apple Silicon only |
+| `/usr/local/bin/aih` | the CLI; question-detection and search models are compiled in, and the summarizer LLM runs in-process via llama.cpp |
 
 Then just open Aiherd.app — it launches `aih serve` itself over a Unix socket,
 so no TCP port is taken. To also reach the dashboard from a phone or browser,
@@ -32,18 +31,27 @@ macOS 14 (Sonoma) or newer, on arm64 (Apple Silicon) or x86_64 (Intel).
 
 ## What runs offline
 
-Everything except the summarizer's weights. The installer carries its own Python
-interpreter and the mlx-lm wheels, so the only thing a first run fetches is the
-LLM itself (~2 GB from Hugging Face), and only when the stable-terminal
-summarizer actually triggers. That feature needs Apple Silicon with ≥16 GB, so
-the Intel package ships without those assets.
+Everything except the summarizer's weights. There is **no Python involved**: the
+LLM runs inside `aih` itself through llama.cpp (Metal on Apple Silicon), so the
+only thing a first run fetches is the GGUF model — about 2.5 GB from Hugging
+Face, into `~/Library/Application Support/aiherd/models`, and only when the
+stable-terminal summarizer actually triggers. The download resumes if it is
+interrupted, and the dashboard shows its progress on the pane that started it.
 
-Point it at a different model, or turn it off, with `AIHERD_SUMMARIZER`:
+That feature needs Apple Silicon with ≥16 GB; elsewhere it stays off and the
+rest of the app works normally.
+
+Point it at a different model, or turn it off, with `AIHERD_SUMMARIZER`. It takes
+a Hugging Face **GGUF** repo, optionally with an explicit filename — without one,
+`<repo>-Q4_K_M.gguf` is assumed:
 
 ```sh
-AIHERD_SUMMARIZER=off aih serve                                # no LLM at all
-AIHERD_SUMMARIZER=mlx-community/Qwen3-14B-4bit aih serve        # bigger judge
+AIHERD_SUMMARIZER=off aih serve                                     # no LLM at all
+AIHERD_SUMMARIZER=unsloth/Qwen3-14B-GGUF aih serve                  # bigger judge
+AIHERD_SUMMARIZER=unsloth/Qwen3-14B-GGUF:Qwen3-14B-Q5_K_M.gguf aih serve
 ```
+
+MLX repos (`mlx-community/...`) no longer work — that was the old Python engine.
 
 ## Signing and notarization
 
