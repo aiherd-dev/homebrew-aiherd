@@ -293,6 +293,26 @@ aih serve -p 8080 --tty ttys002,ttys004,ttys007,ttys009</code></pre>
 (<code>--tty ttys002 --tty ttys004</code>) as well as comma-separated lists, and
 overrides pinned panes — so the set you name is exactly the set you get.</p>
 
+<h3>Everything the dashboard knows, on stdout</h3>
+
+<p>Search, summaries and the question list all read the <em>running</em> server
+over that same Unix socket. So they work while the app is open, take no port,
+and cost nothing to start — the models are already loaded over there rather than
+being spun up per command.</p>
+
+<pre><code>aih summaries                                  <span class="c"># what every pane is working on</span>
+aih questions                                  <span class="c"># panes waiting on input, with their answer options</span>
+
+aih search "sentry crash"                      <span class="c"># live screens + history, each with its summary</span>
+aih search "sentry crash" --live                <span class="c"># only what's on screen right now</span>
+aih search "trust prompt" --vector              <span class="c"># only stored history, by meaning</span>
+aih search "trust prompt" --judge-tty ttys017   <span class="c"># ask the LLM if one pane is relevant, and why</span>
+
+aih summaries --json | jq -r '.[].topic'        <span class="c"># --json on any of them</span></code></pre>
+
+<p>Point any of them at a different server with <code>--url</code> — a socket
+path, or <code>http://host:port</code> for one started with <code>-p</code>.</p>
+
 <h3>The summarizer</h3>
 
 <p>Summaries need Apple Silicon with 16 GB or more. On first use the model
