@@ -8,12 +8,12 @@ cask "aiherd" do
   url "https://github.com/aiherd-dev/homebrew-aiherd/releases/download/v#{version}/aiherd-#{version}-#{arch}-apple-darwin.pkg"
   name "aiherd"
   desc "Watch terminal panes and auto-detect/auto-approve prompts"
-  homepage "https://github.com/aiherd-dev/aiherd"
+  homepage "https://aiherd-dev.github.io/"
 
   depends_on macos: :sonoma
 
   # A signed, notarized and stapled installer laying down /Applications/
-  # Aiherd.app and /usr/local/bin/aih. No Python: the summarizer LLM runs
+  # AIHerd.app and /usr/local/bin/aih. No Python: the summarizer LLM runs
   # in-process via llama.cpp, statically linked into `aih`.
   #
   # No postflight xattr dance: installer payloads are not quarantined the way a
@@ -25,6 +25,9 @@ cask "aiherd" do
   uninstall quit:    "com.elazarl.aiherd",
             pkgutil: "ai.aiherd.suite",
             delete:  [
+              "/Applications/AIHerd.app",
+              # Pre-0.4.1 installs used this casing; keep it so an upgrade
+              # removes the stale bundle instead of leaving two apps.
               "/Applications/Aiherd.app",
               "/usr/local/bin/aih",
               # Pre-0.3.1 installs staged CPython + mlx-lm wheels here.
@@ -39,7 +42,7 @@ cask "aiherd" do
   ]
 
   caveats <<~EOS
-    Just open Aiherd.app — it starts `aih serve` itself
+    Just open AIHerd.app — it starts `aih serve` itself
     (over a Unix socket; no TCP port is taken). To also reach the dashboard
     from a phone/browser, run `aih serve -p 8080` yourself.
 

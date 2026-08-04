@@ -14,10 +14,10 @@ The cask runs a signed installer package, which lays down:
 
 | Path | What |
 |---|---|
-| `/Applications/Aiherd.app` | native SwiftUI dashboard (universal) |
+| `/Applications/AIHerd.app` | native SwiftUI dashboard (universal) |
 | `/usr/local/bin/aih` | the CLI; question-detection and search models are compiled in, and the summarizer LLM runs in-process via llama.cpp |
 
-Then just open Aiherd.app — it launches `aih serve` itself over a Unix socket,
+Then just open AIHerd.app — it launches `aih serve` itself over a Unix socket,
 so no TCP port is taken. To also reach the dashboard from a phone or browser,
 run `aih serve -p 8080` yourself.
 
@@ -57,7 +57,7 @@ MLX repos (`mlx-community/...`) no longer work — that was the old Python engin
 
 The installer, the app, the CLI and every bundled binary are signed with a
 Developer ID certificate (team `QNHETPLPPW`) and built with the **hardened
-runtime**. Both the `.pkg` and Aiherd.app carry **stapled** notarization
+runtime**. Both the `.pkg` and AIHerd.app carry **stapled** notarization
 tickets, so Gatekeeper validates them with no network round-trip. Installer
 payloads also aren't quarantined the way an archive's contents are, so the CLI
 needs no unquarantining either.
@@ -66,9 +66,9 @@ Verify any of it yourself:
 
 ```sh
 pkgutil --check-signature ~/Downloads/aiherd-*.pkg    # expect: signed by a developer certificate
-codesign -dv --verbose=4 /Applications/Aiherd.app     # expect: flags=0x10000(runtime)
-spctl -a -vvv /Applications/Aiherd.app                # expect: accepted, source=Notarized Developer ID
-xcrun stapler validate /Applications/Aiherd.app       # expect: worked
+codesign -dv --verbose=4 /Applications/AIHerd.app     # expect: flags=0x10000(runtime)
+spctl -a -vvv /Applications/AIHerd.app                # expect: accepted, source=Notarized Developer ID
+xcrun stapler validate /Applications/AIHerd.app       # expect: worked
 ```
 
 ## Uninstall
