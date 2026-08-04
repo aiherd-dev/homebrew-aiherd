@@ -313,20 +313,9 @@ without it.</p>
 <table>
   <tr><th>Path</th><th>What</th></tr>
   <tr><td><code>/Applications/AIHerd.app</code></td><td>Native SwiftUI dashboard, universal binary.</td></tr>
-  <tr><td><code>/usr/local/bin/aih</code></td><td>The CLI. Question-detection and search models are compiled in; the summarizer runs in-process via llama.cpp.</td></tr>
+  <tr><td><code>/usr/local/bin/aih</code></td><td>The CLI.</td></tr>
 </table>
 </div>
-
-<p>The installer, the app, the CLI and every bundled binary are signed with a
-Developer ID certificate (team <code>QNHETPLPPW</code>) and built with the
-hardened runtime. Both the <code>.pkg</code> and the app carry stapled
-notarization tickets, so Gatekeeper validates them with no network round-trip.
-Check for yourself:</p>
-
-<pre><code>pkgutil --check-signature ~/Downloads/aiherd-*.pkg  <span class="c"># signed by a developer certificate</span>
-codesign -dv --verbose=4 /Applications/AIHerd.app   <span class="c"># flags=0x10000(runtime)</span>
-spctl -a -vvv /Applications/AIHerd.app              <span class="c"># accepted, source=Notarized Developer ID</span>
-xcrun stapler validate /Applications/AIHerd.app     <span class="c"># worked</span></code></pre>
 
 <h2>Uninstall</h2>
 
