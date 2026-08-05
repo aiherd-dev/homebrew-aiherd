@@ -1,9 +1,9 @@
 cask "aiherd" do
   arch arm: "aarch64", intel: "x86_64"
 
-  version "0.4.0"
-  sha256 arm:   "55bc7ef2318d94df3f3dac1ee583b8763086dec3d9c2dd1ff37be845b16139a2",
-         intel: "5bb345f201a73db6a84fae1aeaf8034d6a7e135939c5564943416321d0353806"
+  version "0.4.1"
+  sha256 arm:   "ae2787afaf024682282c87d4816d29567b6f70f3702fddd443650a85f9fa16da",
+         intel: "5743c5d9a0167b00bd34b9f4b4cf27920498ae2bca991b093ffcf483a176869b"
 
   url "https://github.com/aiherd-dev/homebrew-aiherd/releases/download/v#{version}/aiherd-#{version}-#{arch}-apple-darwin.pkg"
   name "aiherd"
