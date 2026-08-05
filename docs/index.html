@@ -8,313 +8,282 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="img/icon.png">
 <link rel="apple-touch-icon" href="img/icon.png">
-
-<style>
-  :root {
-    --bg: #fbfbfa;
-    --panel: #ffffff;
-    --ink: #1a1a1c;
-    --ink-soft: #5c5c66;
-    --line: #e4e4e8;
-    --accent: #2f6f4f;
-    --accent-soft: #eaf3ee;
-    --code-bg: #f4f4f2;
-    --shadow: 0 1px 2px rgba(0,0,0,.05), 0 8px 24px rgba(0,0,0,.05);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #14141a;
-      --panel: #1c1c24;
-      --ink: #edecf0;
-      --ink-soft: #a2a2b0;
-      --line: #2e2e3a;
-      --accent: #7fd0a3;
-      --accent-soft: #1e2a24;
-      --code-bg: #101016;
-      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #14141a; --panel: #1c1c24; --ink: #edecf0; --ink-soft: #a2a2b0;
-    --line: #2e2e3a; --accent: #7fd0a3; --accent-soft: #1e2a24; --code-bg: #101016;
-    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
-  }
-  :root[data-theme="light"] {
-    --bg: #fbfbfa; --panel: #ffffff; --ink: #1a1a1c; --ink-soft: #5c5c66;
-    --line: #e4e4e8; --accent: #2f6f4f; --accent-soft: #eaf3ee; --code-bg: #f4f4f2;
-    --shadow: 0 1px 2px rgba(0,0,0,.05), 0 8px 24px rgba(0,0,0,.05);
-  }
-
-  body {
-    background: var(--bg);
-    color: var(--ink);
-    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-    margin: 0;
-    padding: 0 20px 96px;
-    -webkit-font-smoothing: antialiased;
-  }
-  .wrap { max-width: 860px; margin: 0 auto; }
-
-  header { padding: 72px 0 48px; border-bottom: 1px solid var(--line); }
-  h1 {
-    font-size: 2.9rem; letter-spacing: -.025em; margin: 0 0 .3em; font-weight: 640;
-    display: flex; align-items: center; gap: .45em;
-  }
-  h1 img { width: 1.35em; height: 1.35em; flex: none; }
-  .tagline { font-size: 1.3rem; color: var(--ink-soft); margin: 0 0 2em; max-width: 34em; }
-  .req { color: var(--ink-soft); font-size: .9rem; margin-top: 1.1em; }
-
-  h2 {
-    font-size: 1.45rem; letter-spacing: -.015em; font-weight: 620;
-    margin: 3.2em 0 .2em;
-  }
-  h2 + .sub { color: var(--ink-soft); margin: 0 0 1.4em; }
-  h3 { font-size: 1.05rem; margin: 2em 0 .3em; font-weight: 620; }
-
-  pre, code { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace; }
-  pre {
-    background: var(--code-bg); border: 1px solid var(--line); border-radius: 10px;
-    padding: 14px 16px; overflow-x: auto; font-size: .875rem; line-height: 1.6;
-  }
-  p code, li code, td code {
-    background: var(--code-bg); border: 1px solid var(--line); border-radius: 5px;
-    padding: .08em .38em; font-size: .875em;
-  }
-  pre .c { color: var(--ink-soft); }
-
-  .install { position: relative; }
-  .install pre {
-    background: var(--accent-soft); border-color: var(--accent);
-    font-size: 1rem; padding: 18px 20px;
-    /* Room for the button, so a narrow viewport scrolls the command under it
-       rather than behind it. */
-    padding-right: 92px;
-  }
-  .install button {
-    position: absolute; top: 10px; right: 10px;
-    font: inherit; font-size: .8rem; line-height: 1;
-    padding: 7px 11px; border-radius: 7px; cursor: pointer;
-    color: var(--ink); background: var(--panel);
-    border: 1px solid var(--line);
-  }
-  .install button:hover { border-color: var(--accent); color: var(--accent); }
-  .install button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .install button[data-copied] { color: var(--accent); border-color: var(--accent); }
-
-  figure { margin: 0 0 2.4em; }
-  /* Wider than the prose column, so it sits outside .wrap rather than using a
-     negative-margin breakout — calc(50% - 50vw) counts the scrollbar and gives
-     the body a horizontal scroll. */
-  figure.hero { max-width: 1500px; margin: 2.6em auto 0; }
-  figure.hero figcaption { max-width: 860px; }
-  figure img {
-    display: block; width: 100%; height: auto; border-radius: 12px;
-    border: 1px solid var(--line); box-shadow: var(--shadow); background: var(--panel);
-  }
-  figcaption { color: var(--ink-soft); font-size: .9rem; margin-top: .7em; }
-
-  figure video {
-    display: block; width: 100%; height: auto; border-radius: 12px;
-    border: 1px solid var(--line); box-shadow: var(--shadow); background: var(--panel);
-  }
-
-  .feature { border-top: 1px solid var(--line); padding-top: 1.6em; margin-top: 2.4em; }
-  .feature:first-of-type { border-top: 0; }
-
-  table { border-collapse: collapse; width: 100%; font-size: .93rem; margin: 1em 0; }
-  th, td { text-align: left; padding: .55em .7em; border-bottom: 1px solid var(--line); vertical-align: top; }
-  th { font-weight: 620; }
-  .scroll { overflow-x: auto; }
-
-  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
-  footer { margin-top: 4.5em; padding-top: 1.6em; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: .9rem; }
-</style>
+<link rel="stylesheet" href="css/site.css">
 </head>
-<body>
+<body class="bg-white text-gray-900 antialiased dark:bg-gray-900 dark:text-white">
 
-<div class="wrap">
+<header class="sticky top-0 z-20 border-b border-gray-200 bg-white/90 backdrop-blur dark:border-gray-700 dark:bg-gray-900/90">
+  <nav class="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between px-4 py-3 lg:px-6">
+    <a href="#top" class="flex items-center gap-2">
+      <img src="img/icon.png" class="h-8 w-8" alt="">
+      <span class="text-xl font-semibold">AIHerd</span>
+    </a>
 
-<header>
-  <h1><img src="img/icon.png" alt="">AIHerd</h1>
-  <p class="tagline">You have six coding agents running in six panes. Five are
-  working and one is blocked on a yes/no question. AIHerd tells you which.</p>
+    <button type="button" id="nav-toggle" aria-controls="nav-links" aria-expanded="false"
+            class="inline-flex items-center rounded-lg p-2 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 md:hidden dark:text-gray-400 dark:hover:bg-gray-800">
+      <span class="sr-only">Toggle navigation</span>
+      <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+        <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+      </svg>
+    </button>
 
-  <div class="install">
-    <pre><code id="install-cmd">brew install --cask aiherd-dev/aiherd/aiherd</code></pre>
-    <button type="button" id="copy-install" data-target="install-cmd"
-            aria-label="Copy the install command">Copy</button>
-  </div>
-  <p class="req">macOS 14 (Sonoma) or newer · Apple Silicon or Intel</p>
+    <div id="nav-links" class="hidden w-full md:block md:w-auto">
+      <ul class="mt-3 flex flex-col gap-1 font-medium md:mt-0 md:flex-row md:gap-8">
+        <li><a href="#what" class="block rounded px-2 py-2 hover:text-primary-700 md:p-0 dark:hover:text-primary-400">What it does</a></li>
+        <li><a href="#features" class="block rounded px-2 py-2 hover:text-primary-700 md:p-0 dark:hover:text-primary-400">Features</a></li>
+        <li><a href="#screenshots" class="block rounded px-2 py-2 hover:text-primary-700 md:p-0 dark:hover:text-primary-400">Screenshots</a></li>
+        <li><a href="#cli" class="block rounded px-2 py-2 hover:text-primary-700 md:p-0 dark:hover:text-primary-400">CLI</a></li>
+        <li><a href="https://github.com/aiherd-dev/homebrew-aiherd" class="block rounded px-2 py-2 hover:text-primary-700 md:p-0 dark:hover:text-primary-400">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
 </header>
-</div>
 
-<figure class="hero">
-  <img src="img/app.png" alt="The AIHerd app window showing three agent panes side by side, two of them flagged as waiting on a question">
-  <figcaption>Three agents in three different terminal programs, in one window.
-  Two have stopped to ask something; AIHerd pulled their answers out of the
-  screen so you can pick one from here.</figcaption>
-</figure>
+<main id="top">
 
-<div class="wrap">
+<!-- Hero -->
+<section class="mx-auto max-w-screen-xl px-4 pt-12 pb-8 text-center lg:px-6 lg:pt-20">
+  <h1 class="mx-auto max-w-4xl text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+    Watch every coding agent in one dashboard
+  </h1>
+  <p class="lead mx-auto mt-6 max-w-2xl text-lg sm:text-xl">
+    You have six coding agents running in six panes. Five are working and one is
+    blocked on a yes/no question. AIHerd tells you which.
+  </p>
 
-<h2>What it does</h2>
-<p class="sub">One dashboard over every terminal pane on the machine.</p>
+  <!-- Install: the button sits under the command on narrow screens rather than
+       stealing width from it. -->
+  <div class="mx-auto mt-8 max-w-2xl">
+    <div class="flex flex-col gap-2 rounded-xl border border-primary-600 bg-primary-50 p-3 sm:flex-row sm:items-center dark:border-primary-500/60 dark:bg-primary-500/10">
+      <pre class="flex-1 overflow-x-auto px-2 py-1 text-left font-mono text-sm sm:text-base"><code id="install-cmd">brew install --cask aiherd-dev/aiherd/aiherd</code></pre>
+      <button type="button" id="copy-install" data-target="install-cmd" aria-label="Copy the install command"
+              class="shrink-0 rounded-lg border border-primary-600 px-4 py-2 text-sm font-medium text-primary-800 hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-primary-400 dark:border-primary-500/60 dark:text-primary-300 dark:hover:bg-primary-500/20">Copy</button>
+    </div>
+    <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">macOS 14 (Sonoma) or newer · Apple Silicon or Intel</p>
+  </div>
+</section>
 
-<p>AIHerd watches the PTY devices your terminals are attached to, notices which
-ones have a CLI coding agent on them — <code>claude</code>, <code>codex</code>,
-<code>agy</code>, <code>grok</code> and a dozen others — and reads what is on
-each screen. A small classifier compiled into the binary scores every screen for
-"is this waiting on a human?", so a pane that has stopped to ask permission
-surfaces immediately instead of sitting unnoticed behind three other windows.</p>
+<section class="mx-auto max-w-screen-xl px-4 pb-12 lg:px-6">
+  <figure>
+    <img src="img/app.png" class="shot" alt="The AIHerd app window showing three agent panes side by side, two of them flagged as waiting on a question">
+    <figcaption class="shot-caption mx-auto max-w-3xl text-center">
+      Three agents in three different terminal programs, in one window. Two have
+      stopped to ask something; AIHerd pulled their answers out of the screen so
+      you can pick one from here.
+    </figcaption>
+  </figure>
+</section>
 
-<p>It works across terminal programs: iTerm2, Terminal, tmux and cmux panes.</p>
+<!-- What it does -->
+<section id="what" class="border-t border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/40">
+  <div class="prose-block mx-auto max-w-screen-md px-4 py-12 lg:px-6 lg:py-16">
+    <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">What it does</h2>
+    <p class="lead mt-3 text-lg">One dashboard over every terminal pane on the machine.</p>
+    <p class="lead mt-6">
+      AIHerd watches the PTY devices your terminals are attached to, notices which
+      ones have a CLI coding agent on them — <code>claude</code>, <code>codex</code>,
+      <code>agy</code>, <code>grok</code> and a dozen others — and reads what is on
+      each screen. A small classifier compiled into the binary scores every screen for
+      "is this waiting on a human?", so a pane that has stopped to ask permission
+      surfaces immediately instead of sitting unnoticed behind three other windows.
+    </p>
+    <p class="lead mt-4">It works across terminal programs: iTerm2, Terminal, tmux and cmux panes.</p>
+  </div>
+</section>
 
-<h2>Screenshots</h2>
-<p class="sub">One session, three agents, three different terminal programs:
-<code>claude</code> in a cmux pane, <code>codex</code> in iTerm2 and
-<code>grok</code> in Terminal.</p>
+<!-- Features -->
+<section id="features" class="mx-auto max-w-screen-xl px-4 py-12 lg:px-6 lg:py-16">
+  <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Features</h2>
 
-<figure>
-  <img src="img/dashboard.png" alt="The same three panes in the browser dashboard, with one-line summaries across the top">
-  <figcaption>The same session in a browser, from <code>aih serve -p 8080</code>.
-  The chips along the top are one line per pane, so you can read the state of
-  every agent at a glance.</figcaption>
-</figure>
+  <div class="mt-10 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
 
-<figure>
-  <img src="img/pane.png" alt="A single pane opened full width, with a command input and key-send buttons">
-  <figcaption>One pane, full width. Type into it, send arrow keys or Enter, turn
-  on nudging, or click straight into the screen.</figcaption>
-</figure>
+    <div>
+      <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
+        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M18 10A8 8 0 112 10a8 8 0 0116 0zm-8-3a1 1 0 100 2h.01a1 1 0 100-2H10zm-1 4a1 1 0 011-1h.01a1 1 0 01.99 1v3a1 1 0 11-2 0v-3z" clip-rule="evenodd"/></svg>
+      </div>
+      <h3 class="text-lg font-semibold">Spots the pane that is waiting on you</h3>
+      <p class="lead mt-2">An embedded question classifier scores each screen; panes that are blocked
+      on a prompt are called out. Nothing is sent anywhere — the model ships inside
+      the <code>aih</code> binary and runs locally.</p>
+    </div>
 
-<figure>
-  <img src="img/judge.png" alt="Search results ranked by score, each judged by an LLM that explains why the session matches or does not">
-  <figcaption>Search is two passes. Embeddings rank the candidates on the left;
-  then an LLM reads each one and says <em>why</em> it matches — here it accepts
-  the grok session at 98% and quotes the line that earned it, while rejecting a
-  Kubernetes session at 5% for having nothing to do with directory trust. That
-  second pass is what stops a lexically-plausible hit from wasting your
-  time.</figcaption>
-</figure>
+    <div>
+      <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
+        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414zM11 12a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/></svg>
+      </div>
+      <h3 class="text-lg font-semibold">Answer without switching windows</h3>
+      <p class="lead mt-2">Type a reply, send a keypress, scroll, or click straight into any pane from
+      the dashboard. The pane behaves exactly as if you had focused its terminal and
+      typed there, because that is what happens underneath.</p>
+    </div>
 
-<figure>
-  <img src="img/jump.png" alt="A pane showing stitched history, scrolled to the moment the search matched">
-  <figcaption>Click a hit and it opens that pane's whole saved history stitched
-  into one document, positioned at the moment the match happened — not at the
-  top, where you'd have to hunt for it.</figcaption>
-</figure>
+    <div>
+      <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
+        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z"/></svg>
+      </div>
+      <h3 class="text-lg font-semibold">Nudge a stalled agent</h3>
+      <p class="lead mt-2">Toggle nudging on a pane and AIHerd answers the routine prompts for you, so
+      an agent that would have blocked on a confirmation keeps going.</p>
+    </div>
 
-<figure>
-  <img src="img/snapshots.png" alt="The snapshot pager showing snapshot 1 of 2 with older and newer arrows">
-  <figcaption>Or step through the saved snapshots one at a time. Scrolling past
-  the top of a screen pages back to the previous one, so a pane's history reads
-  like a scrollback that outlives the process.</figcaption>
-</figure>
+    <div>
+      <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
+        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm3 1h6v2H7V5zm0 4h6v1H7V9zm0 3h4v1H7v-1z" clip-rule="evenodd"/></svg>
+      </div>
+      <h3 class="text-lg font-semibold">Plain-language summaries</h3>
+      <p class="lead mt-2">Once a pane goes quiet, an LLM running in-process writes a
+      short summary of what happened there. No Python, no <code>uv</code>, no venv:
+      the model runs inside <code>aih</code> itself, on Metal on Apple Silicon.</p>
+    </div>
 
-<h2>Mouse support</h2>
-<p class="sub">Wheel and clicks go through to the real terminal, so a pane's own
-TUI responds as if you were sitting in front of it.</p>
+    <div>
+      <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
+        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+      </div>
+      <h3 class="text-lg font-semibold">Semantic search across every session</h3>
+      <p class="lead mt-2">Screens are indexed as you work, so you can search months of scrollback by
+      meaning rather than exact string — and jump to the matching point in the
+      stitched history of that pane. The search model is compiled in too.</p>
+    </div>
 
-<figure>
-  <video src="img/mouse-scroll.mp4" controls muted loop playsinline preload="metadata"></video>
-  <figcaption>Scrolling up a claude pane from the dashboard. Once the screen is
-  at its top edge the wheel stops scrolling the view and is forwarded to the
-  terminal instead — the <code>↑ scroll sent</code> badge marks each tick that
-  went through, and claude's own scrollback moves.</figcaption>
-</figure>
+    <div>
+      <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
+        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+      </div>
+      <h3 class="text-lg font-semibold">Start new agents from the dashboard</h3>
+      <p class="lead mt-2">Pick an agent and a working directory and AIHerd opens a pane for it.</p>
+    </div>
 
-<figure>
-  <video src="img/mouse-click.mp4" controls muted loop playsinline preload="metadata"></video>
-  <figcaption>And clicks land too: pressing the pane's own <em>Jump to bottom</em>
-  control snaps it back to the live tail.</figcaption>
-</figure>
+    <div>
+      <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
+        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
+      </div>
+      <h3 class="text-lg font-semibold">Reachable from your phone</h3>
+      <p class="lead mt-2">By default AIHerd binds only a Unix socket, so it takes no TCP port at all.
+      Pass <code>-p 8080</code> and the same dashboard is available in any browser on
+      your network.</p>
+    </div>
 
-<p>This one is terminal-specific. cmux forwards mouse events; iTerm2 and
-Terminal don't, and AIHerd says so on the button rather than letting you
-click into nothing. Everything else on this page works the same everywhere.</p>
+  </div>
+</section>
 
-<h2>Features</h2>
+<!-- Screenshots -->
+<section id="screenshots" class="border-t border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/40">
+  <div class="mx-auto max-w-screen-xl px-4 py-12 lg:px-6 lg:py-16">
+    <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Screenshots</h2>
+    <p class="lead mt-3 max-w-3xl text-lg">
+      One session, three agents, three different terminal programs:
+      <code>claude</code> in a cmux pane, <code>codex</code> in iTerm2 and
+      <code>grok</code> in Terminal.
+    </p>
 
-<div class="feature">
-  <h3>Spots the pane that is waiting on you</h3>
-  <p>An embedded question classifier scores each screen; panes that are blocked
-  on a prompt are called out. Nothing is sent anywhere — the model ships inside
-  the <code>aih</code> binary and runs locally.</p>
-</div>
+    <div class="mt-10 grid gap-10 lg:grid-cols-2">
+      <figure>
+        <img src="img/dashboard.png" class="shot" alt="The same three panes in the browser dashboard, with one-line summaries across the top">
+        <figcaption class="shot-caption">The same session in a browser, from <code>aih serve -p 8080</code>.
+        The chips along the top are one line per pane, so you can read the state of
+        every agent at a glance.</figcaption>
+      </figure>
 
-<div class="feature">
-  <h3>Answer without switching windows</h3>
-  <p>Type a reply, send a keypress, scroll, or click straight into any pane from
-  the dashboard. The pane behaves exactly as if you had focused its terminal and
-  typed there, because that is what happens underneath.</p>
-</div>
+      <figure>
+        <img src="img/pane.png" class="shot" alt="A single pane opened full width, with a command input and key-send buttons">
+        <figcaption class="shot-caption">One pane, full width. Type into it, send arrow keys or Enter, turn
+        on nudging, or click straight into the screen.</figcaption>
+      </figure>
 
-<div class="feature">
-  <h3>Nudge a stalled agent</h3>
-  <p>Toggle nudging on a pane and AIHerd answers the routine prompts for you, so
-  an agent that would have blocked on a confirmation keeps going.</p>
-</div>
+      <figure>
+        <img src="img/judge.png" class="shot" alt="Search results ranked by score, each judged by an LLM that explains why the session matches or does not">
+        <figcaption class="shot-caption">Search is two passes. Embeddings rank the candidates on the left;
+        then an LLM reads each one and says <em>why</em> it matches — here it accepts
+        the grok session at 98% and quotes the line that earned it, while rejecting a
+        Kubernetes session at 5% for having nothing to do with directory trust. That
+        second pass is what stops a lexically-plausible hit from wasting your
+        time.</figcaption>
+      </figure>
 
-<div class="feature">
-  <h3>Plain-language summaries of what each agent is doing</h3>
-  <p>Once a pane goes quiet, an LLM running in-process writes a
-  short summary of what happened there. No Python, no <code>uv</code>, no venv:
-  the model runs inside <code>aih</code> itself, on Metal on Apple Silicon.</p>
-</div>
+      <figure>
+        <img src="img/jump.png" class="shot" alt="A pane showing stitched history, scrolled to the moment the search matched">
+        <figcaption class="shot-caption">Click a hit and it opens that pane's whole saved history stitched
+        into one document, positioned at the moment the match happened — not at the
+        top, where you'd have to hunt for it.</figcaption>
+      </figure>
 
-<div class="feature">
-  <h3>Semantic search across every session</h3>
-  <p>Screens are indexed as you work, so you can search months of scrollback by
-  meaning rather than exact string — and jump to the matching point in the
-  stitched history of that pane. The search model is compiled in too.</p>
-</div>
+      <figure class="lg:col-span-2">
+        <img src="img/snapshots.png" class="shot" alt="The snapshot pager showing snapshot 1 of 2 with older and newer arrows">
+        <figcaption class="shot-caption">Or step through the saved snapshots one at a time. Scrolling past
+        the top of a screen pages back to the previous one, so a pane's history reads
+        like a scrollback that outlives the process.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
 
-<div class="feature">
-  <h3>Start new agents from the dashboard</h3>
-  <p>Pick an agent and a working directory and AIHerd opens a pane for it.</p>
-</div>
+<!-- Mouse support -->
+<section id="mouse" class="mx-auto max-w-screen-xl px-4 py-12 lg:px-6 lg:py-16">
+  <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Mouse support</h2>
+  <p class="lead mt-3 max-w-3xl text-lg">
+    Wheel and clicks go through to the real terminal, so a pane's own TUI responds
+    as if you were sitting in front of it.
+  </p>
 
-<div class="feature">
-  <h3>Reachable from your phone</h3>
-  <p>By default AIHerd binds only a Unix socket, so it takes no TCP port at all.
-  Pass <code>-p 8080</code> and the same dashboard is available in any browser on
-  your network.</p>
-</div>
+  <div class="mt-10 grid gap-10 lg:grid-cols-2">
+    <figure>
+      <video src="img/mouse-scroll.mp4" class="shot" controls muted loop playsinline preload="metadata"></video>
+      <figcaption class="shot-caption">Scrolling up a claude pane from the dashboard. Once the screen is
+      at its top edge the wheel stops scrolling the view and is forwarded to the
+      terminal instead — the <code>↑ scroll sent</code> badge marks each tick that
+      went through, and claude's own scrollback moves.</figcaption>
+    </figure>
 
-<h2>Usage</h2>
+    <figure>
+      <video src="img/mouse-click.mp4" class="shot" controls muted loop playsinline preload="metadata"></video>
+      <figcaption class="shot-caption">And clicks land too: pressing the pane's own <em>Jump to bottom</em>
+      control snaps it back to the live tail.</figcaption>
+    </figure>
+  </div>
 
-<p>Open AIHerd.app and it starts <code>aih serve</code> itself over a Unix
-socket. Everything below is for driving it from a terminal instead.</p>
+  <p class="lead mt-8 max-w-3xl">This one is terminal-specific. cmux forwards mouse events; iTerm2 and
+  Terminal don't, and AIHerd says so on the button rather than letting you
+  click into nothing. Everything else on this page works the same everywhere.</p>
+</section>
 
-<pre><code>aih                          <span class="c"># serve on the Unix socket (the default)</span>
+<!-- Usage / CLI -->
+<section id="cli" class="border-t border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/40">
+  <div class="prose-block mx-auto max-w-screen-lg px-4 py-12 lg:px-6 lg:py-16">
+    <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Usage</h2>
+
+    <p class="lead mt-6">Open AIHerd.app and it starts <code>aih serve</code> itself over a Unix
+    socket. Everything below is for driving it from a terminal instead.</p>
+
+    <pre class="code-block mt-4"><code>aih                          <span class="c"># serve on the Unix socket (the default)</span>
 aih serve -p 8080            <span class="c"># also serve on a TCP port, for a phone or browser</span>
 aih serve claude             <span class="c"># only panes running a matching executable</span>
 aih find-terminals --no-monitor   <span class="c"># print the panes AIHerd can see, and their TTYs</span></code></pre>
 
-<h3>Narrowing to specific panes</h3>
+    <h3 class="mt-10 text-xl font-bold">Narrowing to specific panes</h3>
 
-<p>Pass <code>--tty</code> to pin the dashboard to an exact set of panes and
-ignore every other terminal on the machine. Useful for a demo or a screenshot,
-where you want four known agents on screen and nothing else:</p>
+    <p class="lead mt-3">Pass <code>--tty</code> to pin the dashboard to an exact set of panes and
+    ignore every other terminal on the machine. Useful for a demo or a screenshot,
+    where you want four known agents on screen and nothing else:</p>
 
-<pre><code><span class="c"># find the panes you care about</span>
+    <pre class="code-block mt-4"><code><span class="c"># find the panes you care about</span>
 aih find-terminals --no-monitor
 
 <span class="c"># then show only those</span>
 aih serve -p 8080 --tty ttys002,ttys004,ttys007,ttys009</code></pre>
 
-<p>It takes bare names or <code>/dev/</code> paths, repeats
-(<code>--tty ttys002 --tty ttys004</code>) as well as comma-separated lists, and
-overrides pinned panes — so the set you name is exactly the set you get.</p>
+    <p class="lead mt-3">It takes bare names or <code>/dev/</code> paths, repeats
+    (<code>--tty ttys002 --tty ttys004</code>) as well as comma-separated lists, and
+    overrides pinned panes — so the set you name is exactly the set you get.</p>
 
-<h3>Everything the dashboard knows, on stdout</h3>
+    <h3 class="mt-10 text-xl font-bold">Everything the dashboard knows, on stdout</h3>
 
-<p>Search, summaries and the question list all read the <em>running</em> server
-over that same Unix socket. So they work while the app is open, take no port,
-and cost nothing to start — the models are already loaded over there rather than
-being spun up per command.</p>
+    <p class="lead mt-3">Search, summaries and the question list all read the <em>running</em> server
+    over that same Unix socket. So they work while the app is open, take no port,
+    and cost nothing to start — the models are already loaded over there rather than
+    being spun up per command.</p>
 
-<pre><code>aih summaries                                  <span class="c"># what every pane is working on</span>
+    <pre class="code-block mt-4"><code>aih summaries                                  <span class="c"># what every pane is working on</span>
 aih questions                                  <span class="c"># panes waiting on input, with their answer options</span>
 
 aih search "sentry crash"                      <span class="c"># live screens + history, each with its summary</span>
@@ -324,46 +293,75 @@ aih search "trust prompt" --judge-tty ttys017   <span class="c"># ask the LLM if
 
 aih summaries --json | jq -r '.[].topic'        <span class="c"># --json on any of them</span></code></pre>
 
-<p>Point any of them at a different server with <code>--url</code> — a socket
-path, or <code>http://host:port</code> for one started with <code>-p</code>.</p>
+    <p class="lead mt-3">Point any of them at a different server with <code>--url</code> — a socket
+    path, or <code>http://host:port</code> for one started with <code>-p</code>.</p>
 
-<h3>The summarizer</h3>
+    <h3 class="mt-10 text-xl font-bold">The summarizer</h3>
 
-<p>Summaries need Apple Silicon with 16 GB or more. On first use the model
-(~2.5 GB) downloads into
-<code>~/Library/Application Support/aiherd/models</code>, and the dashboard shows
-the progress on the pane that triggered it. Everything else works offline and
-without it.</p>
+    <p class="lead mt-3">Summaries need Apple Silicon with 16 GB or more. On first use the model
+    (~2.5 GB) downloads into
+    <code>~/Library/Application Support/aiherd/models</code>, and the dashboard shows
+    the progress on the pane that triggered it. Everything else works offline and
+    without it.</p>
 
-<div class="scroll">
-<table>
-  <tr><th><code>AIHERD_SUMMARIZER</code></th><th>Effect</th></tr>
-  <tr><td><code>off</code></td><td>No LLM at all.</td></tr>
-  <tr><td><code>unsloth/Qwen3-14B-GGUF</code></td><td>A bigger judge. Any Hugging Face <strong>GGUF</strong> repo works; without a filename, <code>&lt;repo&gt;-Q4_K_M.gguf</code> is assumed.</td></tr>
-  <tr><td><code>unsloth/Qwen3-14B-GGUF:Qwen3-14B-Q5_K_M.gguf</code></td><td>An explicit file in that repo.</td></tr>
-</table>
-</div>
+    <div class="mt-4 overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+      <table class="data-table">
+        <tr><th><code>AIHERD_SUMMARIZER</code></th><th>Effect</th></tr>
+        <tr><td><code>off</code></td><td>No LLM at all.</td></tr>
+        <tr><td><code>unsloth/Qwen3-14B-GGUF</code></td><td>A bigger judge. Any Hugging Face <strong>GGUF</strong> repo works; without a filename, <code>&lt;repo&gt;-Q4_K_M.gguf</code> is assumed.</td></tr>
+        <tr><td><code>unsloth/Qwen3-14B-GGUF:Qwen3-14B-Q5_K_M.gguf</code></td><td>An explicit file in that repo.</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
 
-<h2>What it installs</h2>
+<!-- Install / uninstall -->
+<section class="prose-block mx-auto max-w-screen-lg px-4 py-12 lg:px-6 lg:py-16">
+  <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">What it installs</h2>
 
-<div class="scroll">
-<table>
-  <tr><th>Path</th><th>What</th></tr>
-  <tr><td><code>/Applications/AIHerd.app</code></td><td>Native SwiftUI dashboard, universal binary.</td></tr>
-  <tr><td><code>/usr/local/bin/aih</code></td><td>The CLI.</td></tr>
-</table>
-</div>
+  <div class="mt-6 overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+    <table class="data-table">
+      <tr><th>Path</th><th>What</th></tr>
+      <tr><td><code>/Applications/AIHerd.app</code></td><td>Native SwiftUI dashboard, universal binary.</td></tr>
+      <tr><td><code>/usr/local/bin/aih</code></td><td>The CLI.</td></tr>
+    </table>
+  </div>
 
-<h2>Uninstall</h2>
-
-<pre><code>brew uninstall --cask aiherd         <span class="c"># app, CLI and bundled assets</span>
+  <h3 class="mt-10 text-xl font-bold">Uninstall</h3>
+  <pre class="code-block mt-4"><code>brew uninstall --cask aiherd         <span class="c"># app, CLI and bundled assets</span>
 brew uninstall --zap --cask aiherd   <span class="c"># also the text index, settings and logs</span></code></pre>
+</section>
 
-<footer>
-  Installed from the <a href="https://github.com/aiherd-dev/homebrew-aiherd">aiherd-dev/aiherd</a> tap.
+<!-- CTA -->
+<section class="border-t border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/40">
+  <div class="mx-auto max-w-screen-md px-4 py-12 text-center lg:py-16">
+    <h2 class="text-3xl font-extrabold tracking-tight">Stop hunting for the blocked pane</h2>
+    <p class="lead mt-4">One command, and every agent on the machine is in one window.</p>
+    <div class="mx-auto mt-6 flex max-w-xl flex-col gap-2 rounded-xl border border-primary-600 bg-white p-3 sm:flex-row sm:items-center dark:border-primary-500/60 dark:bg-gray-900">
+      <pre class="flex-1 overflow-x-auto px-2 py-1 text-left font-mono text-sm sm:text-base"><code id="install-cmd-2">brew install --cask aiherd-dev/aiherd/aiherd</code></pre>
+      <button type="button" data-target="install-cmd-2" aria-label="Copy the install command"
+              class="shrink-0 rounded-lg border border-primary-600 px-4 py-2 text-sm font-medium text-primary-800 hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-primary-400 dark:border-primary-500/60 dark:text-primary-300 dark:hover:bg-primary-500/20">Copy</button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="border-t border-gray-200 dark:border-gray-700">
+  <div class="prose-block mx-auto max-w-screen-xl px-4 py-8 text-sm text-gray-500 lg:px-6 dark:text-gray-400">
+    Installed from the <a href="https://github.com/aiherd-dev/homebrew-aiherd">aiherd-dev/aiherd</a> tap.
+  </div>
 </footer>
 
 <script>
+  // One nav button; a component library for it would be heavier than the button.
+  const navToggle = document.getElementById("nav-toggle");
+  const navLinks = document.getElementById("nav-links");
+  navToggle.addEventListener("click", () => {
+    const open = navLinks.classList.toggle("hidden") === false;
+    navToggle.setAttribute("aria-expanded", String(open));
+  });
+
   // navigator.clipboard needs a secure context, so it's absent over plain http
   // (someone serving these docs locally). Fall back to a throwaway textarea +
   // execCommand, which still works everywhere that matters.
@@ -384,19 +382,14 @@ brew uninstall --zap --cask aiherd   <span class="c"># also the text index, sett
           ta.remove();
         }
         btn.textContent = "Copied";
-        btn.dataset.copied = "";
       } catch {
         // Don't claim success we didn't get — leave the text selectable.
         btn.textContent = "Press ⌘C";
       }
-      setTimeout(() => {
-        btn.textContent = "Copy";
-        delete btn.dataset.copied;
-      }, 1600);
+      setTimeout(() => { btn.textContent = "Copy"; }, 1600);
     });
   });
 </script>
 
-</div>
 </body>
 </html>

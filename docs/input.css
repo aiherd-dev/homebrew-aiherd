@@ -1,0 +1,59 @@
+/* Source for css/site.css. After changing any class in index.html, rebuild:
+ *
+ *   cd dist/homebrew-aiherd/docs && npx tailwindcss@3 -i input.css -o css/site.css --minify
+ *
+ * v3 is pinned deliberately: v4 moved to CSS-first config and tailwind.config.js
+ * would need migrating for no gain here. The built file is committed, so the
+ * published site needs no toolchain — only editing it does.
+ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Inline code inside prose. Reset again inside .code-block, where the <code>
+     is the whole block rather than a phrase in a sentence. */
+  code {
+    @apply rounded bg-gray-100 px-1 py-0.5 font-mono text-[0.875em] text-gray-800 dark:bg-gray-800 dark:text-gray-200;
+  }
+  .code-block code {
+    @apply bg-transparent p-0 text-inherit;
+  }
+  .prose-block a {
+    @apply font-medium text-primary-700 underline decoration-1 underline-offset-2 dark:text-primary-400;
+  }
+}
+
+@layer components {
+  /* Long command lines scroll inside their own frame — the page itself must
+     never widen, which is what went wrong on phones before this rewrite. */
+  .code-block {
+    @apply overflow-x-auto rounded-lg border border-gray-200 bg-gray-50 p-4 font-mono text-sm leading-relaxed text-gray-800 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-200;
+  }
+  /* Trailing `# comment` in the command samples. */
+  .c {
+    @apply text-gray-400 dark:text-gray-500;
+  }
+
+  .data-table {
+    @apply w-full text-left text-sm text-gray-600 dark:text-gray-300;
+  }
+  .data-table th {
+    @apply px-4 py-3 font-semibold text-gray-900 dark:text-white;
+  }
+  .data-table td {
+    @apply border-t border-gray-200 px-4 py-3 align-top dark:border-gray-700;
+  }
+
+  /* Screenshots are dark-UI PNGs; the border and shadow stop them reading as
+     holes punched in a light page. */
+  .shot {
+    @apply w-full rounded-lg border border-gray-200 shadow-xl dark:border-gray-700;
+  }
+  .shot-caption {
+    @apply mt-3 text-sm text-gray-500 dark:text-gray-400;
+  }
+  .lead {
+    @apply text-gray-600 dark:text-gray-300;
+  }
+}
