@@ -82,10 +82,24 @@
   }
   pre .c { color: var(--ink-soft); }
 
+  .install { position: relative; }
   .install pre {
     background: var(--accent-soft); border-color: var(--accent);
     font-size: 1rem; padding: 18px 20px;
+    /* Room for the button, so a narrow viewport scrolls the command under it
+       rather than behind it. */
+    padding-right: 92px;
   }
+  .install button {
+    position: absolute; top: 10px; right: 10px;
+    font: inherit; font-size: .8rem; line-height: 1;
+    padding: 7px 11px; border-radius: 7px; cursor: pointer;
+    color: var(--ink); background: var(--panel);
+    border: 1px solid var(--line);
+  }
+  .install button:hover { border-color: var(--accent); color: var(--accent); }
+  .install button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .install button[data-copied] { color: var(--accent); border-color: var(--accent); }
 
   figure { margin: 0 0 2.4em; }
   /* Wider than the prose column, so it sits outside .wrap rather than using a
@@ -126,7 +140,9 @@
   working and one is blocked on a yes/no question. AIHerd tells you which.</p>
 
   <div class="install">
-    <pre><code>brew install --cask aiherd-dev/aiherd/aiherd</code></pre>
+    <pre><code id="install-cmd">brew install --cask aiherd-dev/aiherd/aiherd</code></pre>
+    <button type="button" id="copy-install" data-target="install-cmd"
+            aria-label="Copy the install command">Copy</button>
   </div>
   <p class="req">macOS 14 (Sonoma) or newer · Apple Silicon or Intel</p>
 </header>
@@ -151,14 +167,12 @@ each screen. A small classifier compiled into the binary scores every screen for
 "is this waiting on a human?", so a pane that has stopped to ask permission
 surfaces immediately instead of sitting unnoticed behind three other windows.</p>
 
-<p>It works across terminal programs. iTerm2, Terminal.app, tmux and cmux panes
-all land in the same list, because the thing being watched is the TTY, not the
-terminal emulator.</p>
+<p>It works across terminal programs: iTerm2, Terminal, tmux and cmux panes.</p>
 
 <h2>Screenshots</h2>
 <p class="sub">One session, three agents, three different terminal programs:
 <code>claude</code> in a cmux pane, <code>codex</code> in iTerm2 and
-<code>grok</code> in Terminal.app.</p>
+<code>grok</code> in Terminal.</p>
 
 <figure>
   <img src="img/dashboard.png" alt="The same three panes in the browser dashboard, with one-line summaries across the top">
@@ -216,7 +230,7 @@ TUI responds as if you were sitting in front of it.</p>
 </figure>
 
 <p>This one is terminal-specific. cmux forwards mouse events; iTerm2 and
-Terminal.app don't, and AIHerd says so on the button rather than letting you
+Terminal don't, and AIHerd says so on the button rather than letting you
 click into nothing. Everything else on this page works the same everywhere.</p>
 
 <h2>Features</h2>
@@ -348,6 +362,40 @@ brew uninstall --zap --cask aiherd   <span class="c"># also the text index, sett
 <footer>
   Installed from the <a href="https://github.com/aiherd-dev/homebrew-aiherd">aiherd-dev/aiherd</a> tap.
 </footer>
+
+<script>
+  // navigator.clipboard needs a secure context, so it's absent over plain http
+  // (someone serving these docs locally). Fall back to a throwaway textarea +
+  // execCommand, which still works everywhere that matters.
+  document.querySelectorAll("button[data-target]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const text = document.getElementById(btn.dataset.target).textContent;
+      try {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          ta.style.position = "fixed";
+          ta.style.opacity = "0";
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+        }
+        btn.textContent = "Copied";
+        btn.dataset.copied = "";
+      } catch {
+        // Don't claim success we didn't get — leave the text selectable.
+        btn.textContent = "Press ⌘C";
+      }
+      setTimeout(() => {
+        btn.textContent = "Copy";
+        delete btn.dataset.copied;
+      }, 1600);
+    });
+  });
+</script>
 
 </div>
 </body>
