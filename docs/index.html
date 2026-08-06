@@ -31,6 +31,7 @@
       <ul class="mt-3 flex flex-col gap-1 font-medium md:mt-0 md:flex-row md:gap-8">
         <li><a href="#what" class="block rounded px-2 py-2 hover:text-primary-700 md:p-0 dark:hover:text-primary-400">What it does</a></li>
         <li><a href="#features" class="block rounded px-2 py-2 hover:text-primary-700 md:p-0 dark:hover:text-primary-400">Features</a></li>
+        <li><a href="#agents" class="block rounded px-2 py-2 hover:text-primary-700 md:p-0 dark:hover:text-primary-400">Background agents</a></li>
         <li><a href="#screenshots" class="block rounded px-2 py-2 hover:text-primary-700 md:p-0 dark:hover:text-primary-400">Screenshots</a></li>
         <li><a href="#cli" class="block rounded px-2 py-2 hover:text-primary-700 md:p-0 dark:hover:text-primary-400">CLI</a></li>
       </ul>
@@ -155,6 +156,16 @@
 
     <div>
       <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
+        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v5.27l4.57-2.64a1 1 0 011 1.73L12 10l4.57 2.64a1 1 0 01-1 1.73L11 11.73V17a1 1 0 01-2 0v-5.27l-4.57 2.64a1 1 0 01-1-1.73L8 10 3.43 7.36a1 1 0 011-1.73L9 8.27V3a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+      </div>
+      <h3 class="text-lg font-semibold">Claude Code background sessions</h3>
+      <p class="lead mt-2">Sessions with no terminal attached never show up in a pane view. AIHerd
+      lists them anyway, counts the live ones on the button, and opens any of them in a
+      real pane when you click it.</p>
+    </div>
+
+    <div>
+      <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
         <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
       </div>
       <h3 class="text-lg font-semibold">Reachable from your phone</h3>
@@ -163,6 +174,43 @@
       your network.</p>
     </div>
 
+  </div>
+</section>
+
+<!-- Background agents -->
+<section id="agents" class="border-t border-gray-200 dark:border-gray-700">
+  <div class="mx-auto max-w-screen-xl px-4 py-12 lg:px-6 lg:py-16">
+    <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Claude Code background sessions</h2>
+    <p class="lead mt-3 max-w-3xl text-lg">
+      A background session is a full Claude Code conversation that keeps running with
+      no terminal attached. Nothing on a pane-based dashboard can see it — so one
+      sitting blocked on a permission prompt waits indefinitely, in a window that
+      does not exist.
+    </p>
+
+    <div class="mt-10 grid items-start gap-10 lg:grid-cols-2">
+      <figure>
+        <img src="img/agents.png" class="shot" alt="The agents button in the AIHerd toolbar showing a count of one, with its list open below: a background session in ~/tasks marked blocked, and a show finished toggle">
+        <figcaption class="shot-caption">The count on the button is how many are live, refreshed while
+        you're looking at the window. Open it for the list.</figcaption>
+      </figure>
+
+      <div class="prose-block">
+        <p class="lead">Each row is one session: what it was asked to do, where it is
+        running, how long it has been going, and its state — <em>working</em>,
+        <em>blocked</em> (with what it is blocked on: a permission prompt, a question,
+        a sandbox request), <em>done</em>, <em>failed</em> or <em>stopped</em>.</p>
+
+        <p class="lead mt-4">Hover a row to read its recent output without touching it.
+        Click one and AIHerd opens a pane and attaches it there, so the session you were
+        only watching becomes the session you're in — and it keeps running whether or not
+        you close that pane.</p>
+
+        <p class="lead mt-4">The panes already on your grid are left out of the list, since
+        those are the sessions you can see. The button only appears when there is a
+        <code>claude</code> pane to begin with.</p>
+      </div>
+    </div>
   </div>
 </section>
 
