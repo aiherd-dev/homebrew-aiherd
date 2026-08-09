@@ -148,6 +148,17 @@
 
     <div>
       <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
+        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm8 0a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V4zm0 6a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1h-4a1 1 0 01-1-1v-6z" clip-rule="evenodd"/></svg>
+      </div>
+      <h3 class="text-lg font-semibold">A sidebar of every session</h3>
+      <p class="lead mt-2">One card per pane — topic, summary, what it's waiting on, and where it
+      runs. ⌘F jumps to its filter, which also matches the working directory; misses
+      dim, hits highlight the text that earned them, and the sidebar follows you into
+      a pane's detail view.</p>
+    </div>
+
+    <div>
+      <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
         <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"/></svg>
       </div>
       <h3 class="text-lg font-semibold">Start new agents from the dashboard</h3>
@@ -253,6 +264,15 @@
         <figcaption class="shot-caption">Click a hit and it opens that pane's whole saved history stitched
         into one document, positioned at the moment the match happened — not at the
         top, where you'd have to hunt for it.</figcaption>
+      </figure>
+
+      <figure class="lg:col-span-2">
+        <img src="img/sidebar.png" class="shot" alt="The session sidebar next to the pane grid: a searchable column of per-pane digest cards, with the filter text highlighted inside the matching summaries">
+        <figcaption class="shot-caption">The session sidebar, filtered to <em>live</em>. Each card is one
+        pane's digest — topic, summary, what it's waiting on, the directory it runs
+        in — and the matched text is highlighted, so you can see <em>why</em> a card
+        survived the filter. ⌘F puts the cursor in the box; typing at the grid lands
+        there too.</figcaption>
       </figure>
 
       <figure class="lg:col-span-2">
