@@ -170,6 +170,17 @@
 
     <div>
       <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
+        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
+      </div>
+      <h3 class="text-lg font-semibold">Search the agents' own transcripts</h3>
+      <p class="lead mt-2">Claude Code, Codex, OpenCode and pi each keep every conversation on disk.
+      The 📁 files column greps those files directly — including sessions that ended
+      long before AIHerd was watching — and ▶ resumes the one you picked in a new
+      pane, in its original directory.</p>
+    </div>
+
+    <div>
+      <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
         <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm8 0a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V4zm0 6a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1h-4a1 1 0 01-1-1v-6z" clip-rule="evenodd"/></svg>
       </div>
       <h3 class="text-lg font-semibold">A sidebar of every session</h3>
@@ -347,6 +358,18 @@
         <figcaption class="shot-caption">Click a hit and it opens that pane's whole saved history stitched
         into one document, positioned at the moment the match happened — not at the
         top, where you'd have to hunt for it.</figcaption>
+      </figure>
+
+      <figure class="lg:col-span-2">
+        <img src="img/search-files.png" class="shot" alt="The search tab with three columns: history, llm and files. The files column lists a Claude Code transcript matching talmud, scored 85% with the judge's reasoning, and a green resume button">
+        <figcaption class="shot-caption">Searching <em>talmud</em> across all three sources at once.
+        <strong>history</strong> is AIHerd's own screen index; <strong>llm</strong> is
+        the judge's verdict on each candidate; <strong>files</strong> greps the
+        transcripts Claude Code, Codex, OpenCode and pi write to disk — so a session
+        that ended before AIHerd ever ran is still findable. Here the judge throws out
+        two panes at 0% and 5% and keeps the file hit at 85%, quoting the
+        <code>/talmud/</code> path that earned it. ▶ resume reopens that conversation
+        in a new pane, in the directory it started in.</figcaption>
       </figure>
 
       <figure class="lg:col-span-2">
