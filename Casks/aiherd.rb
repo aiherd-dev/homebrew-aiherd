@@ -21,8 +21,9 @@ cask "aiherd" do
   # notarization ticket, so this validates with no network at all.
   pkg "aiherd-#{version}-#{arch}-apple-darwin.pkg"
 
-  # quit takes the app's bundle id, not the pkg id.
-  uninstall quit:    "com.elazarl.aiherd",
+  # quit takes the app's bundle id, not the pkg id. Both: 0.4.13 and earlier
+  # shipped com.elazarl.aiherd, so an upgrade from one still has to quit it.
+  uninstall quit:    ["dev.aiherd.AIHerd", "com.elazarl.aiherd"],
             pkgutil: "ai.aiherd.suite",
             delete:  [
               "/Applications/AIHerd.app",
