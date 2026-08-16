@@ -88,8 +88,8 @@
       "is this waiting on a human?", so a pane that has stopped to ask permission
       surfaces immediately instead of sitting unnoticed behind three other windows.
     </p>
-    <p class="lead mt-4">It works across terminal programs: iTerm2, Terminal, tmux and cmux panes, and
-      VS Code's built-in terminal through a bundled extension the app offers to install.</p>
+    <p class="lead mt-4">It works across terminal programs: iTerm2, Terminal, Ghostty, tmux and cmux
+      panes, and VS Code's built-in terminal through a bundled extension the app offers to install.</p>
   </div>
 </section>
 
@@ -173,8 +173,9 @@
         <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
       </div>
       <h3 class="text-lg font-semibold">Search the agents' own transcripts</h3>
-      <p class="lead mt-2">Claude Code, Codex, OpenCode and pi each keep every conversation on disk.
-      The 📁 files column greps those files directly — including sessions that ended
+      <p class="lead mt-2">Claude Code, Codex, OpenCode, pi, grok and Cursor — the CLI agent and the
+      IDE's own chats — each keep every conversation on disk.
+      The 📁 files column greps those directly — including sessions that ended
       long before AIHerd was watching — and ▶ resumes the one you picked in a new
       pane, in its original directory.</p>
     </div>
@@ -257,7 +258,20 @@
       <h3 class="text-lg font-semibold">Reachable from your phone</h3>
       <p class="lead mt-2">By default AIHerd binds only a Unix socket, so it takes no TCP port at all.
       Pass <code>-p 8080</code> and the same dashboard is available in any browser on
-      your network.</p>
+      your network — or reach it over ssh, with no port open at all.</p>
+    </div>
+
+    <div>
+      <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
+        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M4.083 9h1.946c.089-1.546.383-2.97.837-4.118A6.004 6.004 0 004.083 9zM10 2a8 8 0 100 16 8 8 0 000-16zm0 2c-.076 0-.232.032-.465.262-.238.234-.497.623-.737 1.182-.389.907-.673 2.142-.766 3.556h3.936c-.093-1.414-.377-2.649-.766-3.556-.24-.56-.5-.948-.737-1.182C10.232 4.032 10.076 4 10 4zm3.971 5c-.089-1.546-.383-2.97-.837-4.118A6.004 6.004 0 0115.917 9h-1.946zm-2.003 2H8.032c.093 1.414.377 2.649.766 3.556.24.56.5.948.737 1.182.233.23.389.262.465.262.076 0 .232-.032.465-.262.238-.234.498-.623.737-1.182.389-.907.673-2.142.766-3.556zm1.166 4.118c.454-1.147.748-2.572.837-4.118h1.946a6.004 6.004 0 01-2.783 4.118zm-6.268 0C6.412 13.97 6.118 12.546 6.03 11H4.083a6.004 6.004 0 002.783 4.118z" clip-rule="evenodd"/></svg>
+      </div>
+      <h3 class="text-lg font-semibold">A herd on another machine</h3>
+      <p class="lead mt-2">🌐 attaches the app to a herd running somewhere else, forwarded over
+      ssh — the host autocompletes from your <code>~/.ssh/config</code>, and 🏠/🛰 next to it
+      switches between that machine and this one in a click. "serve by ssh…" pushes the
+      other way, publishing this herd onto a remote host; that tunnel lives in the server,
+      so it outlives the app. <code>aih from-ssh &lt;host&gt;</code> does the same thing headless
+      and prints a local URL.</p>
     </div>
 
   </div>
@@ -306,16 +320,17 @@
     <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Follow any terminal</h2>
     <p class="lead mt-3 max-w-3xl text-lg">
       The grid normally shows panes where AIHerd recognizes a coding agent. The
-      <strong>＋ terminal</strong> button is for everything else: a build script, an
+      <strong>untracked</strong> tab (⌘4) is for everything else: a build script, an
       <code>ssh</code> session, a plain shell you want an eye on anyway.
     </p>
 
     <div class="mt-10 grid items-start gap-10 lg:grid-cols-2">
       <figure>
-        <img src="img/terminals.png" class="shot" alt="The terminal picker open under the plus-terminal button: a card per untracked terminal, each with its TTY, the program on it and a live preview of its screen">
+        <img src="img/terminals.png" class="shot" alt="The untracked tab: a card per untracked terminal, each with its TTY, the program on it and a preview of its screen">
         <figcaption class="shot-caption">One card per terminal not on the grid yet — its TTY, what's
-        running there, and a live preview of its screen, captured the moment the
-        picker opens.</figcaption>
+        running there, and a preview of its screen. Hover a card and the full screen
+        floats above the grid; the tab's own filter box thins the cards without
+        touching history search.</figcaption>
       </figure>
 
       <div class="prose-block">
@@ -323,8 +338,8 @@
         any other pane — screen capture, summaries, semantic search, saved history —
         even though no known agent runs on it.</p>
 
-        <p class="lead mt-4">The previews are captured server-side when the picker
-        opens, so an idle picker costs nothing. Terminals already on the grid are
+        <p class="lead mt-4">The previews are captured server-side when the tab
+        opens, so an idle tab costs nothing. Terminals already on the grid are
         left out of the list.</p>
       </div>
     </div>
@@ -377,8 +392,8 @@
         <figcaption class="shot-caption">Searching <em>talmud</em> across all three sources at once.
         <strong>history</strong> is AIHerd's own screen index; <strong>llm</strong> is
         the judge's verdict on each candidate; <strong>files</strong> greps the
-        transcripts Claude Code, Codex, OpenCode and pi write to disk — so a session
-        that ended before AIHerd ever ran is still findable. Here the judge throws out
+        transcripts Claude Code, Codex, OpenCode, pi, grok and Cursor write to disk —
+        so a session that ended before AIHerd ever ran is still findable. Here the judge throws out
         two panes at 0% and 5% and keeps the file hit at 85%, quoting the
         <code>/talmud/</code> path that earned it. ▶ resume reopens that conversation
         in a new pane, in the directory it started in.</figcaption>
@@ -465,7 +480,9 @@
 
   <p class="lead mt-8 max-w-3xl">This one is terminal-specific. cmux forwards mouse events; iTerm2 and
   Terminal don't, and AIHerd says so on the button rather than letting you
-  click into nothing. Everything else on this page works the same everywhere.</p>
+  click into nothing. tmux can, but its panes are usually a bare shell where a
+  wheel tick arrives as Escape, so it starts off and one click turns it on.
+  Everything else on this page works the same everywhere.</p>
 </section>
 
 <!-- Usage / CLI -->
@@ -479,7 +496,8 @@
     <pre class="code-block mt-4"><code>aih                          <span class="c"># serve on the Unix socket (the default)</span>
 aih serve -p 8080            <span class="c"># also serve on a TCP port, for a phone or browser</span>
 aih serve claude             <span class="c"># only panes running a matching executable</span>
-aih find-terminals --no-monitor   <span class="c"># print the panes AIHerd can see, and their TTYs</span></code></pre>
+aih find-terminals --no-monitor   <span class="c"># print the panes AIHerd can see, and their TTYs</span>
+aih from-ssh me@build-box      <span class="c"># tunnel that machine's herd to a local URL over ssh</span></code></pre>
 
     <h3 class="mt-10 text-xl font-bold">Narrowing to specific panes</h3>
 
