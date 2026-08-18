@@ -282,7 +282,9 @@
       <p class="lead mt-2">Native apps rather than the dashboard in a web view: pane cards with the
       answer chips, a live pane you can type into, stitched history, search, and a notification
       when an agent stops to ask something that opens straight on that pane. They reach the herd
-      by direct URL or over an ssh tunnel with a pinned host key. On TestFlight and Play's
+      by direct URL or over an ssh tunnel with a pinned host key. Setting one up is a single QR
+      code: it carries the ssh details — filled in from your <code>~/.ssh/config</code> — plus a
+      device token, so the phone adds the host and skips PIN pairing. On TestFlight and Play's
       internal track.</p>
     </div>
 
@@ -295,7 +297,9 @@
       ssh — the host autocompletes from your <code>~/.ssh/config</code>, and 🏠/🛰 next to it
       switches between that machine and this one in a click. "serve by ssh…" pushes the
       other way, publishing this herd onto a remote host; that tunnel lives in the server,
-      so it outlives the app. <code>aih from-ssh &lt;host&gt;</code> does the same thing headless
+      so it outlives the app, and a badge naming the target and the number of connected
+      clients stays on screen while it does — click it for the sockets and the ssh pid, or to
+      stop it. <code>aih from-ssh &lt;host&gt;</code> does the same thing headless
       and prints a local URL.</p>
     </div>
 
