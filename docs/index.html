@@ -69,10 +69,8 @@
   <figure>
     <video src="img/app.mp4" class="shot" controls muted loop playsinline preload="metadata" poster="img/app-poster.png"></video>
     <figcaption class="shot-caption mx-auto max-w-3xl text-center">
-      A minute with the herd, live: one tile per agent — its sheep grazing while it
-      works — with the topic, the latest summary line and the tail of its screen.
-      The sidebar keeps one card per session and holds what each pane is waiting on
-      in amber; live, past, search and untracked sit one tab apart.
+      A minute with the herd: one tile per agent — sheep, topic, latest summary,
+      live tail. The sidebar holds what each session is waiting on.
     </figcaption>
   </figure>
 </section>
@@ -82,16 +80,14 @@
   <div class="prose-block mx-auto max-w-screen-md px-4 py-12 lg:px-6 lg:py-16">
     <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">What it does</h2>
     <p class="lead mt-3 text-lg">One dashboard over every terminal pane on the machine.</p>
-    <p class="lead mt-6">
-      AIHerd watches the PTY devices your terminals are attached to, notices which
-      ones have a CLI coding agent on them — <code>claude</code>, <code>codex</code>,
-      <code>agy</code>, <code>grok</code> and a dozen others — and reads what is on
-      each screen. A small classifier compiled into the binary scores every screen for
-      "is this waiting on a human?", so a pane that has stopped to ask permission
-      surfaces immediately instead of sitting unnoticed behind three other windows.
-    </p>
-    <p class="lead mt-4">It works across terminal programs: iTerm2, Terminal, Ghostty, tmux and cmux
-      panes, and VS Code's built-in terminal through a bundled extension the app offers to install.</p>
+    <ul class="lead mt-6 list-disc space-y-2 pl-5">
+      <li>Finds the panes running a coding agent — <code>claude</code>, <code>codex</code>,
+      <code>agy</code>, <code>grok</code> and a dozen others — and reads their screens.</li>
+      <li>A local classifier flags the pane that is waiting on a human, so it surfaces
+      instead of hiding behind three windows.</li>
+      <li>Works in iTerm2, Terminal, Ghostty, tmux, cmux and VS Code's terminal.</li>
+      <li>Everything runs on the machine. Nothing is sent anywhere.</li>
+    </ul>
   </div>
 </section>
 
@@ -106,9 +102,8 @@
         <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M18 10A8 8 0 112 10a8 8 0 0116 0zm-8-3a1 1 0 100 2h.01a1 1 0 100-2H10zm-1 4a1 1 0 011-1h.01a1 1 0 01.99 1v3a1 1 0 11-2 0v-3z" clip-rule="evenodd"/></svg>
       </div>
       <h3 class="text-lg font-semibold">Spots the pane that is waiting on you</h3>
-      <p class="lead mt-2">An embedded question classifier scores each screen; panes that are blocked
-      on a prompt are called out. Nothing is sent anywhere — the model ships inside
-      the <code>aih</code> binary and runs locally.</p>
+      <p class="lead mt-2">Blocked panes are called out. The classifier ships inside
+      <code>aih</code> and runs locally.</p>
     </div>
 
     <div>
@@ -116,9 +111,8 @@
         <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg>
       </div>
       <h3 class="text-lg font-semibold">Mac notifications for new questions</h3>
-      <p class="lead mt-2">Turn on the 🔔 and every agent that newly stops to ask something raises a
-      macOS notification, so you hear about it without watching the window. Only a
-      fresh question notifies — never one you can already see.</p>
+      <p class="lead mt-2">Turn on the 🔔 and a fresh question raises a macOS
+      notification — never one you can already see.</p>
     </div>
 
     <div>
@@ -126,9 +120,8 @@
         <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm3 1h6v2H7V5zm0 4h6v1H7V9zm0 3h4v1H7v-1z" clip-rule="evenodd"/></svg>
       </div>
       <h3 class="text-lg font-semibold">Plain-language summaries</h3>
-      <p class="lead mt-2">Once a pane goes quiet, an LLM running in-process writes a
-      short summary of what happened there. No Python, no <code>uv</code>, no venv:
-      the model runs inside <code>aih</code> itself, on Metal on Apple Silicon.</p>
+      <p class="lead mt-2">An in-process LLM writes what each pane did once it goes
+      quiet. No Python, no venv — Metal on Apple Silicon.</p>
     </div>
 
     <div>
@@ -136,11 +129,9 @@
         <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
       </div>
       <h3 class="text-lg font-semibold">Search the agents' own transcripts</h3>
-      <p class="lead mt-2">Claude Code, Codex, OpenCode, pi, grok and Cursor — the CLI agent and the
-      IDE's own chats — each keep every conversation on disk.
-      The 📁 files column greps those directly — including sessions that ended
-      long before AIHerd was watching — and ▶ resumes the one you picked in a new
-      pane, in its original directory.</p>
+      <p class="lead mt-2">Greps the conversations Claude Code, Codex, Cursor and
+      friends keep on disk — even from before AIHerd ran — and ▶ resumes the one
+      you pick, in its original directory.</p>
     </div>
 
     <div>
@@ -148,9 +139,8 @@
         <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"/></svg>
       </div>
       <h3 class="text-lg font-semibold">Ask about a pane</h3>
-      <p class="lead mt-2">Open a chat next to any pane and ask the local LLM about what's
-      on it — what the agent did, why it stopped, what the error means. In the app and
-      the browser alike.</p>
+      <p class="lead mt-2">A chat next to any pane: what the agent did, why it
+      stopped, what the error means.</p>
     </div>
 
     <div>
@@ -158,19 +148,15 @@
         <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 12a5 5 0 015-5h1a4 4 0 018 0 3 3 0 010 6H8a5 5 0 01-5-5z"/></svg>
       </div>
       <h3 class="text-lg font-semibold">The herd shows itself</h3>
-      <p class="lead mt-2">Each tile carries a sheep whose posture is the pane's state — grazing
-      while it works, head up while it waits on you, lying down once it is done — over a
-      coloured edge saying whether the question is unanswered, acknowledged or being
-      nudged. One toggle in Appearance turns all of it off.</p>
+      <p class="lead mt-2">A sheep per tile: grazing while it works, head up while it
+      asks, lying down when done. One toggle turns it off.</p>
     </div>
   </div>
 
   <figure class="mt-10">
     <img src="img/herd.png" class="shot mx-auto" alt="Two agent tiles: each header has a small green sheep grazing beside the TTY name, terminal and agent badges, an ask button and a ⋯ menu, over a green state edge, with the topic, the summary and a scrolling preview of the screen below">
-    <figcaption class="shot-caption mx-auto max-w-3xl text-center">Two tiles, both working: the sheep graze, the
-    edge under the header is green, and each shows its topic, the latest summary line and
-    the tail of its screen. Kill and nudge live in the ⋯ menu, a mis-click away from
-    nothing.</figcaption>
+    <figcaption class="shot-caption mx-auto max-w-3xl text-center">Two tiles working: sheep grazing,
+    green edge, topic, summary, live tail.</figcaption>
   </figure>
 </section>
 
@@ -179,29 +165,18 @@
   <div class="mx-auto max-w-screen-xl px-4 py-12 lg:px-6 lg:py-16">
     <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Claude Code background sessions</h2>
     <p class="lead mt-3 max-w-3xl text-lg">
-      A background session is a full Claude Code conversation that keeps running with
-      no terminal attached. Nothing on a pane-based dashboard can see it — so one
-      sitting blocked on a permission prompt waits indefinitely, in a window that
+      A background session is a Claude Code conversation with no terminal attached.
+      No pane dashboard can see it — blocked, it waits forever in a window that
       does not exist.
     </p>
 
-    <div class="prose-block mt-8 max-w-3xl">
-      <p class="lead">Each row is one session: what it was asked to do, where it is
-      running, how long it has been going, and its state — <em>working</em>,
-      <em>blocked</em> (with what it is blocked on: a permission prompt, a question,
-      a sandbox request), <em>done</em>, <em>failed</em> or <em>stopped</em>. The
-      count on the toolbar button is how many are live, refreshed while you're
-      looking at the window.</p>
-
-      <p class="lead mt-4">Hover a row to read its recent output without touching it.
-      Click one and AIHerd opens a pane and attaches it there, so the session you were
-      only watching becomes the session you're in — and it keeps running whether or not
-      you close that pane.</p>
-
-      <p class="lead mt-4">The panes already on your grid are left out of the list, since
-      those are the sessions you can see. The button only appears when there is a
-      <code>claude</code> pane to begin with.</p>
-    </div>
+    <ul class="lead mt-8 max-w-3xl list-disc space-y-2 pl-5">
+      <li>One row per session: task, directory, age, and state — <em>working</em>,
+      <em>blocked</em> (and on what), <em>done</em>, <em>failed</em>, <em>stopped</em>.</li>
+      <li>Hover to read its recent output; click to attach it to a pane. It keeps
+      running either way.</li>
+      <li>Panes already on the grid are left out — those you can see.</li>
+    </ul>
   </div>
 </section>
 
@@ -210,34 +185,23 @@
   <div class="mx-auto max-w-screen-xl px-4 py-12 lg:px-6 lg:py-16">
     <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Follow any terminal</h2>
     <p class="lead mt-3 max-w-3xl text-lg">
-      The grid normally shows panes where AIHerd recognizes a coding agent. The
-      <strong>untracked</strong> tab (⌘4) is for everything else: a build script, an
-      <code>ssh</code> session, a plain shell you want an eye on anyway.
+      The grid shows panes with a recognized agent. The <strong>untracked</strong> tab
+      (⌘4) is everything else: a build script, an <code>ssh</code> session, a plain
+      shell you want an eye on anyway.
     </p>
 
-    <div class="prose-block mt-8 max-w-3xl">
-      <p class="lead">One row per terminal not on the grid yet, newest output first, saying
-      which terminal program owns it and which directory it sits in — which is what tells a
-      dozen idle shells apart. The selected row's screen fills the pane beside the list, at
-      full size; ↑/↓ walk the rows and ⏎ tracks one. The tab's own filter box thins the list
-      without touching history search.</p>
-
-      <p class="lead mt-4">Track one and that terminal joins the grid, followed like
-      any other pane — screen capture, summaries, semantic search, saved history —
-      even though no known agent runs on it.</p>
-
-      <p class="lead mt-4">The screens are captured server-side when the tab
-      opens, so an idle tab costs nothing. Terminals already on the grid are
-      left out of the list.</p>
-    </div>
+    <ul class="lead mt-8 max-w-3xl list-disc space-y-2 pl-5">
+      <li>One row per terminal, newest output first — program, command and directory,
+      with the selected screen at full size beside the list.</li>
+      <li>Track one and it joins the grid: capture, summaries, search, saved history.</li>
+      <li>Captured only while the tab is open — an idle tab costs nothing.</li>
+    </ul>
 
     <figure class="mt-10">
       <img src="img/untracked.png" class="shot mx-auto" alt="The untracked tab: 14 candidate terminals grouped into Active, Today and Older, each row naming its terminal program, command and directory — and beside the list, the selected pane's processes, its screen at full size, and a track this pane button">
-      <figcaption class="shot-caption mx-auto max-w-3xl text-center">The untracked tab: every terminal
-      the herd can see but isn't watching — 14 here — grouped by when they last spoke,
-      each row naming its terminal program, command and directory. The selected pane
-      shows its processes and its screen at full size; <em>+ track this pane</em> puts
-      it on the grid.</figcaption>
+      <figcaption class="shot-caption mx-auto max-w-3xl text-center">14 candidates grouped by when they
+      last spoke; the selected pane shows its processes and screen. <em>+ track this
+      pane</em> puts it on the grid.</figcaption>
     </figure>
   </div>
 </section>
@@ -247,61 +211,46 @@
   <div class="mx-auto max-w-screen-xl px-4 py-12 lg:px-6 lg:py-16">
     <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Your herd, from anywhere</h2>
     <p class="lead mt-3 max-w-3xl text-lg">
-      The agents run on the machine under your desk. You are not always at it — so AIHerd
-      publishes the herd, and the phone in your pocket answers the question the agent is
-      blocked on.
+      The agents run on the machine under your desk. The phone in your pocket answers
+      what they're blocked on.
     </p>
 
-    <div class="prose-block mt-8 grid items-start gap-10 lg:grid-cols-2">
+    <div class="mt-8 grid items-start gap-10 lg:grid-cols-2">
       <div>
         <h3 class="text-xl font-bold">Three ways out, three ways in</h3>
-        <p class="lead mt-3"><strong>ssh</strong> to any host you can already reach;
-        <strong>tailscale</strong>, either at the tailnet address or the https name
-        <code>tailscale serve</code> publishes; or <strong>kubernetes</strong>, through a
-        cluster both machines can <code>kubectl</code> to, for the two laptops that can
-        reach no third address. Connect and serve for all three sit in one popup behind
-        the 🌐 button.</p>
-
-        <p class="lead mt-4">Whatever the transport, the device on the far end is approved
-        before it gets in: it shows a 3-digit PIN you type into the dashboard, and every
-        device it has issued is listed in Settings with a revoke button beside it.
-        <code>kubectl exec</code> rights buy a connection and still not a terminal.</p>
-
-        <p class="lead mt-4">While anything is being served the Mac is held awake, so a
-        closed lid doesn't quietly kill a session that looks healthy on both ends — ☕/💤
-        on the status line says which, and one click gives it up. Serving survives a
-        restart of the app.</p>
+        <ul class="lead mt-3 list-disc space-y-2 pl-5">
+          <li><strong>ssh</strong> to any host you can reach; <strong>tailscale</strong>
+          by address or published https name; <strong>kubernetes</strong> through a
+          cluster both machines can <code>kubectl</code> to. All behind the 🌐 button.</li>
+          <li>Every device is approved by a 3-digit PIN, listed in Settings, revocable.</li>
+          <li>The Mac stays awake while serving — ☕/💤 says which — and serving
+          survives an app restart.</li>
+        </ul>
       </div>
 
       <div>
         <h3 class="text-xl font-bold">On the phone</h3>
-        <p class="lead mt-3">Native iPhone and Android apps, not the dashboard in a WebView:
-        the pane cards, a live pane view, history, search, and a notification when an agent
-        starts asking that deep-links straight into the pane. Ask the herd from there too.</p>
-
-        <p class="lead mt-4">Getting a phone in is one code. Every way of serving hands out a
-        single link carrying the connection details and a device token — copy it, or point
-        the phone's camera at the QR beside it — and that is the whole pairing.</p>
-
-        <p class="lead mt-4">Reading a terminal on a 6-inch screen: prose re-flows to the
-        phone's width while borders and tables keep their grid, the arrow and Esc keys ride
-        the keyboard while you type, and there is a ^C key and a menu of the last commands
-        you sent. Lose the tunnel and you get a banner and dimmed buttons rather than an
-        empty screen — the herd you were looking at stays readable until the redial lands.</p>
+        <ul class="lead mt-3 list-disc space-y-2 pl-5">
+          <li>Native iPhone and Android apps: pane cards, live pane view, history,
+          search, and notifications that deep-link into the pane.</li>
+          <li>Pairing is one link or QR — connection details and device token included.</li>
+          <li>Prose re-flows to the phone's width, tables keep their grid; arrows, esc,
+          ^C and command recall ride the keyboard.</li>
+          <li>A dropped tunnel is a banner, not an empty screen.</li>
+        </ul>
       </div>
     </div>
 
     <div class="mx-auto mt-10 grid max-w-3xl gap-10 sm:grid-cols-2">
       <figure>
         <img src="img/phone-list.png" class="shot" alt="The iPhone app's pane list: a card for a pane waiting on a question with its answer options as tappable chips, and cards for working panes with their topics and summaries">
-        <figcaption class="shot-caption">The herd on an iPhone. The top card is a pane waiting on a
-        question — its answer options are chips, tap one and it's answered. The rest
-        show their topic and latest summary.</figcaption>
+        <figcaption class="shot-caption">iPhone: the top card is a question — its answers are chips,
+        tap one and it's answered.</figcaption>
       </figure>
       <figure>
         <img src="img/phone-pane.png" class="shot" alt="The Android app's pane view: the terminal screen with prose wrapped to the phone's width, a command box, and arrow, esc and ctrl-C keys beneath it">
-        <figcaption class="shot-caption">One pane on Android: the screen re-flowed to the phone's
-        width, a command box, and the arrows, esc and ^C a thumb away.</figcaption>
+        <figcaption class="shot-caption">Android: the screen re-flowed, a command box, and arrows,
+        esc and ^C a thumb away.</figcaption>
       </figure>
     </div>
   </div>
@@ -312,31 +261,26 @@
   <div class="mx-auto max-w-screen-xl px-4 py-12 lg:px-6 lg:py-16">
     <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Screenshots</h2>
     <p class="lead mt-3 max-w-3xl text-lg">
-      A herd of <code>claude</code> sessions in cmux panes, watched from the Mac app
-      while it serves the same view to a browser and two phones.
+      A herd of <code>claude</code> sessions, watched from the Mac app.
     </p>
 
     <div class="mt-10 grid gap-10 lg:grid-cols-2">
       <figure class="lg:col-span-2">
         <img src="img/live.png" class="shot" alt="The top of the live tab: local/remote toggle and a serving chip on the sidebar, the live, past, search and untracked tabs, a filter box, a spawn button, and a working tile with its sheep, badges, topic, summary and screen preview">
-        <figcaption class="shot-caption">The top of the window: local or remote herd, a chip saying it is
-        serving, the four tabs, and the first tile — sheep, terminal and agent badges,
-        the topic and latest summary over the tail of its screen. <em>+ claude</em>
-        spawns a fresh agent pane; the ask button opens the local LLM on that
-        pane.</figcaption>
+        <figcaption class="shot-caption">Local or remote herd, a serving chip, four tabs, and the first
+        tile. <em>+ claude</em> spawns a fresh agent pane.</figcaption>
       </figure>
 
       <figure class="lg:col-span-2">
         <video src="img/live-clip.mp4" class="shot" controls muted loop playsinline preload="metadata"></video>
-        <figcaption class="shot-caption">Ten seconds of live: previews follow each pane's screen as it
-        moves, and the sidebar cards hold what every session is waiting on while the
-        grid scrolls past.</figcaption>
+        <figcaption class="shot-caption">Ten seconds of live: previews follow each screen; the sidebar
+        holds what every session waits on.</figcaption>
       </figure>
 
       <figure class="lg:col-span-2">
         <img src="img/sheep-settings.png" class="shot mx-auto max-w-lg" alt="The Appearance settings pane: Catppuccin Mocha theme, terminal and interface font pickers with sizes, a preview, and a toggle reading Herd — each pane's status as a sheep">
-        <figcaption class="shot-caption">Appearance: the theme, both fonts, and the herd itself — one
-        toggle if you'd rather each pane's status weren't a sheep.</figcaption>
+        <figcaption class="shot-caption">The theme, both fonts, and the sheep — one toggle if you'd
+        rather not.</figcaption>
       </figure>
     </div>
   </div>
@@ -353,24 +297,19 @@
   <div class="mt-10 grid gap-10 lg:grid-cols-2">
     <figure>
       <video src="img/mouse-scroll.mp4" class="shot" controls muted loop playsinline preload="metadata"></video>
-      <figcaption class="shot-caption">Scrolling up a claude pane from the dashboard. Once the screen is
-      at its top edge the wheel stops scrolling the view and is forwarded to the
-      terminal instead — the <code>↑ scroll sent</code> badge marks each tick that
-      went through, and claude's own scrollback moves.</figcaption>
+      <figcaption class="shot-caption">At the top edge the wheel forwards to the terminal —
+      claude's own scrollback moves.</figcaption>
     </figure>
 
     <figure>
       <video src="img/mouse-click.mp4" class="shot" controls muted loop playsinline preload="metadata"></video>
-      <figcaption class="shot-caption">And clicks land too: pressing the pane's own <em>Jump to bottom</em>
-      control snaps it back to the live tail.</figcaption>
+      <figcaption class="shot-caption">Clicks land too: <em>Jump to bottom</em> snaps back to the
+      live tail.</figcaption>
     </figure>
   </div>
 
-  <p class="lead mt-8 max-w-3xl">This one is terminal-specific. cmux forwards mouse events; iTerm2 and
-  Terminal don't, and AIHerd says so on the button rather than letting you
-  click into nothing. tmux can, but its panes are usually a bare shell where a
-  wheel tick arrives as Escape, so it starts off and one click turns it on.
-  Everything else on this page works the same everywhere.</p>
+  <p class="lead mt-8 max-w-3xl">Terminal-specific: cmux forwards mouse events; iTerm2 and Terminal
+  don't, and the button says so. tmux starts off, one click turns it on.</p>
 </section>
 
 <!-- Usage / CLI -->
@@ -378,8 +317,8 @@
   <div class="prose-block mx-auto max-w-screen-lg px-4 py-12 lg:px-6 lg:py-16">
     <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Usage</h2>
 
-    <p class="lead mt-6">Open AIHerd.app and it starts <code>aih serve</code> itself over a Unix
-    socket. Everything below is for driving it from a terminal instead.</p>
+    <p class="lead mt-6">Open AIHerd.app and it starts <code>aih serve</code> itself.
+    The CLI drives the same server:</p>
 
     <pre class="code-block mt-4"><code>aih                          <span class="c"># serve on the Unix socket (the default)</span>
 aih serve -p 8080            <span class="c"># also serve on a TCP port, for a phone or browser</span>
@@ -392,15 +331,13 @@ aih serve --kube https://kube.example:6443   <span class="c"># also publish thro
 aih from-ssh me@build-box       <span class="c"># tunnel that machine's herd to a local URL over ssh</span>
 aih from-kube https://kube.example:6443      <span class="c"># the same, through the cluster; --herd picks one</span></code></pre>
 
-    <p class="lead mt-3">Both <code>--tailscale</code> and <code>--kube</code> require the far
-    device to be approved before it sees anything, the way the app's serve popup does;
-    <code>-p/--port</code> is the one unguarded transport, so point nothing public at it.</p>
+    <p class="lead mt-3"><code>--tailscale</code> and <code>--kube</code> require device
+    approval; <code>-p/--port</code> is unguarded — point nothing public at it.</p>
 
     <h3 class="mt-10 text-xl font-bold">Narrowing to specific panes</h3>
 
-    <p class="lead mt-3">Pass <code>--tty</code> to pin the dashboard to an exact set of panes and
-    ignore every other terminal on the machine. Useful for a demo or a screenshot,
-    where you want four known agents on screen and nothing else:</p>
+    <p class="lead mt-3"><code>--tty</code> pins the dashboard to exact panes and ignores
+    the rest:</p>
 
     <pre class="code-block mt-4"><code><span class="c"># find the panes you care about</span>
 aih find-terminals --no-monitor
@@ -408,20 +345,13 @@ aih find-terminals --no-monitor
 <span class="c"># then show only those</span>
 aih serve -p 8080 --tty ttys002,ttys004,ttys007,ttys009</code></pre>
 
-    <p class="lead mt-3">It takes bare names or <code>/dev/</code> paths, repeats
-    (<code>--tty ttys002 --tty ttys004</code>) as well as comma-separated lists, and
-    overrides pinned panes — so the set you name is exactly the set you get.</p>
-
-    <p class="lead mt-3">The same filter lives in Settings — <code>⌘,</code> in the app,
-    the ⚙ in the web toolbar — as a list you add panes to, and it takes effect while
-    the server runs, no restart.</p>
+    <p class="lead mt-3">Bare names or <code>/dev/</code> paths, repeats or commas. The same
+    filter lives in Settings (<code>⌘,</code>), no restart needed.</p>
 
     <h3 class="mt-10 text-xl font-bold">Everything the dashboard knows, on stdout</h3>
 
-    <p class="lead mt-3">Search, summaries and the question list all read the <em>running</em> server
-    over that same Unix socket. So they work while the app is open, take no port,
-    and cost nothing to start — the models are already loaded over there rather than
-    being spun up per command.</p>
+    <p class="lead mt-3">Search, summaries and questions read the running server over its
+    socket — no port, models already loaded:</p>
 
     <pre class="code-block mt-4"><code>aih summaries                                  <span class="c"># what every pane is working on</span>
 aih questions                                  <span class="c"># panes waiting on input, with their answer options</span>
@@ -438,16 +368,10 @@ aih summaries --json | jq -r '.[].topic'        <span class="c"># --json on any 
 
     <h3 class="mt-10 text-xl font-bold">The summarizer</h3>
 
-    <p class="lead mt-3">Summaries need Apple Silicon with 16 GB or more. On first use the model
-    (~2.5 GB) downloads into
-    <code>~/Library/Application Support/aiherd/models</code>, and the dashboard shows
-    the progress on the pane that triggered it. Everything else works offline and
-    without it.</p>
-
-    <p class="lead mt-3">Settings ▸ model picks which one, from a curated list — Qwen3 4B by
-    default, Gemma 4, Llama 3.2, Phi-4 mini — or any Hugging Face GGUF repo you name, with a
-    download and a delete button per row so the disk stays yours. It switches while the
-    server runs. The environment variable below still wins at startup:</p>
+    <p class="lead mt-3">Summaries need Apple Silicon with 16 GB+. The model (~2.5 GB)
+    downloads on first use; everything else works without it. Settings ▸ model picks
+    which — Qwen3 4B by default, or any Hugging Face GGUF repo — switchable while the
+    server runs. The environment variable wins at startup:</p>
 
     <div class="mt-4 overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
       <table class="data-table">
