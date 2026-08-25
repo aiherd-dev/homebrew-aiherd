@@ -217,12 +217,20 @@
 
     <div class="mt-8 grid items-start gap-10 lg:grid-cols-2">
       <div>
-        <h3 class="text-xl font-bold">Three ways out, three ways in</h3>
+        <h3 class="text-xl font-bold">Four ways out, four ways in</h3>
         <ul class="lead mt-3 list-disc space-y-2 pl-5">
+          <li><strong>The herd cloud</strong> — one Serve button, no host to ssh to and
+          no cluster in the middle. It hands out a link for the phone apps and one for
+          any browser, each with a QR.</li>
+          <li>The cloud carries bytes it cannot read: the apps and the browser encrypt
+          every request to the herd's own key, so what it relays — screens, keystrokes,
+          answers — it never sees.</li>
           <li><strong>ssh</strong> to any host you can reach; <strong>tailscale</strong>
           by address or published https name; <strong>kubernetes</strong> through a
-          cluster both machines can <code>kubectl</code> to. All behind the 🌐 button.</li>
-          <li>Every device is approved by a 3-digit PIN, listed in Settings, revocable.</li>
+          cluster both machines can <code>kubectl</code> to. Settings ▸ Network is the
+          one place a herd is published.</li>
+          <li>Those three approve every device by a 3-digit PIN, listed in Settings,
+          revocable; on the cloud path the link itself is the credential.</li>
           <li>The Mac stays awake while serving — ☕/💤 says which — and serving
           survives an app restart.</li>
         </ul>
@@ -234,6 +242,10 @@
           <li>Native iPhone and Android apps: pane cards, live pane view, history,
           search, and notifications that deep-link into the pane.</li>
           <li>Pairing is one link or QR — connection details and device token included.</li>
+          <li>No install needed either: <code>web.aiherd.dev</code> opens the herd from
+          the same kind of link, in any browser.</li>
+          <li>Long-press a pane's screen to select and copy; the screen holds still
+          while you do.</li>
           <li>Prose re-flows to the phone's width, tables keep their grid; arrows, esc,
           ^C and command recall ride the keyboard.</li>
           <li>A dropped tunnel is a banner, not an empty screen.</li>
