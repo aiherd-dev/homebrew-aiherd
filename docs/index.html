@@ -229,8 +229,18 @@
           by address or published https name; <strong>kubernetes</strong> through a
           cluster both machines can <code>kubectl</code> to. Settings ▸ Network is the
           one place a herd is published.</li>
-          <li>Those three approve every device by a 3-digit PIN, listed in Settings,
-          revocable; on the cloud path the link itself is the credential.</li>
+          <li>On the cloud path the QR is a request to pair, not a key: it expires in
+          45 seconds, and scanning it only gets the phone a 3-digit code to read out —
+          you say yes on the Mac, and that one yes admits exactly one device.</li>
+          <li>The ssh, tailscale and kubernetes links carry a device token instead, so
+          the far end is in without a round trip — the ssh one brings that host's key
+          along, and both say so beside the copy and QR buttons. A device arriving
+          without a link is approved by the same 3-digit code. All of them are listed
+          in Settings and revocable.</li>
+          <li>What each way out has carried, kept on disk so a restart doesn't zero it:
+          a Traffic window (⇧⌘S), the same page at <code>/traffic</code>, and
+          <code>aih traffic</code> — with request latency and a connection log under
+          every transport's own panel.</li>
           <li>The Mac stays awake while serving — ☕/💤 says which — and serving
           survives an app restart.</li>
         </ul>
@@ -241,13 +251,15 @@
         <ul class="lead mt-3 list-disc space-y-2 pl-5">
           <li>Native iPhone and Android apps: pane cards, live pane view, history,
           search, and notifications that deep-link into the pane.</li>
-          <li>Pairing is one link or QR — connection details and device token included.</li>
+          <li>Pairing is one link or QR, scanned or pasted — over the cloud the phone
+          then shows a code for you to approve on the Mac.</li>
           <li>No install needed either: <code>web.aiherd.dev</code> opens the herd from
           the same kind of link, in any browser.</li>
           <li>Long-press a pane's screen to select and copy; the screen holds still
           while you do.</li>
-          <li>Prose re-flows to the phone's width, tables keep their grid; arrows, esc,
-          ^C and command recall ride the keyboard.</li>
+          <li>Prose re-flows to the phone's width, tables keep their grid; arrows, esc
+          and command recall ride the keyboard, ⇧ latches onto the next arrow, and ^
+          opens all 26 control letters — ^C, ^L, ^O and the rest.</li>
           <li>A dropped tunnel is a banner, not an empty screen.</li>
         </ul>
       </div>
@@ -377,6 +389,13 @@ aih summaries --json | jq -r '.[].topic'        <span class="c"># --json on any 
 
     <p class="lead mt-3">Point any of them at a different server with <code>--url</code> — a socket
     path, or <code>http://host:port</code> for one started with <code>-p</code>.</p>
+
+    <pre class="code-block mt-4"><code>aih traffic                                    <span class="c"># bytes per way out over the last week</span>
+aih traffic --days 30                          <span class="c"># further back, in wider columns</span></code></pre>
+
+    <p class="lead mt-3"><code>aih traffic</code> reads the store on disk rather than a running
+    server, so it answers for a herd that is stopped — and over <code>ssh</code> with nothing
+    listening.</p>
 
     <h3 class="mt-10 text-xl font-bold">The summarizer</h3>
 
