@@ -1,9 +1,9 @@
 cask "aiherd" do
   arch arm: "aarch64", intel: "x86_64"
 
-  version "0.4.26"
-  sha256 arm:   "fa7708b16b81f24b58d0d318fd996323e36c941c04e1290574077e62fb9d92d0",
-         intel: "250a1bcffc913365aac5515cdd705d00b63229e6f905a80225bf798c45cab670"
+  version "0.4.27"
+  sha256 arm:   "f5d823e989a122e0c7502d88c8ac89a222c2a16bb8c2cb5d643f457985aa5790",
+         intel: "cd6ca960c23ea905529057d4472e6abd4d324e18aed4a3942638e6d320ae3311"
 
   url "https://github.com/aiherd-dev/homebrew-aiherd/releases/download/v#{version}/aiherd-#{version}-#{arch}-apple-darwin.pkg"
   name "aiherd"
@@ -22,8 +22,7 @@ cask "aiherd" do
   pkg "aiherd-#{version}-#{arch}-apple-darwin.pkg"
 
   # quit takes the app's bundle id, not the pkg id. Both: 0.4.13 and earlier
-  # shipped com.elazarl.aiherd, so an upgrade from one still has to quit it.
-  uninstall quit:    ["dev.aiherd.AIHerd", "com.elazarl.aiherd"],
+  uninstall quit:    ["dev.aiherd.AIHerd"],
             pkgutil: "ai.aiherd.suite",
             delete:  [
               "/Applications/AIHerd.app",
