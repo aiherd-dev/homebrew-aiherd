@@ -10,7 +10,7 @@ cask "aiherd" do
   desc "Watch terminal panes and auto-detect/auto-approve prompts"
   homepage "https://aiherd-dev.github.io/"
 
-  depends_on macos: :sonoma
+  depends_on macos: ">= :sonoma"
 
   # A signed, notarized and stapled installer laying down /Applications/
   # AIHerd.app and /usr/local/bin/aih. No Python: the summarizer LLM runs
