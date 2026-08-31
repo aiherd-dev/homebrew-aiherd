@@ -156,10 +156,13 @@
       <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
         <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
       </div>
-      <h3 class="text-lg font-semibold">Tables and links off the screen</h3>
+      <h3 class="text-lg font-semibold">Tables, links and RFCs off the screen</h3>
       <p class="lead mt-2">💡 opens the table a pane printed as real columns — sort a
       heading, copy it as TSV or markdown. 🔗 collects the URLs, putting back
-      together the ones the terminal cut in half at the edge of the pane.</p>
+      together the ones the terminal cut in half at the edge of the pane. 📄 reads
+      an RFC the agent named: its abstract, the section it pointed at, and the link —
+      off a stitched history as well as the live screen, since the pane that named it
+      is often long gone.</p>
     </div>
 
     <div>
@@ -169,7 +172,9 @@
       <h3 class="text-lg font-semibold">Open the file it just named</h3>
       <p class="lead mt-2">📁 lists the paths on a pane's screen that really exist,
       resolved on the herd's own machine. Read one through the herd, syntax-coloured
-      and open at the line the pane named, or hand it to your editor there.</p>
+      and open at the line the pane named — on the Mac and on both phones — or hand
+      it to your editor there. An image opens as the picture; a binary is described,
+      not decoded.</p>
     </div>
   </div>
 
@@ -213,7 +218,11 @@
     <ul class="lead mt-8 max-w-3xl list-disc space-y-2 pl-5">
       <li>One row per terminal, newest output first — program, command and directory,
       with the selected screen at full size beside the list.</li>
-      <li>Track one and it joins the grid: capture, summaries, search, saved history.</li>
+      <li>Track one and it joins the grid: capture, summaries, search, saved history.
+      Its ⋯ lets it go again.</li>
+      <li>Or name the command an agent. Filter by it to see which panes it catches,
+      add it, and every pane running it is watched from then on — including the next
+      one you open. The filter box completes from the commands nothing recognizes yet.</li>
       <li>Captured only while the tab is open — an idle tab costs nothing.</li>
     </ul>
 
@@ -278,9 +287,15 @@
           <li>Long-press a pane's screen to select and copy; the screen holds still
           while you do.</li>
           <li>Prose re-flows to the phone's width, tables keep their grid; arrows, esc,
-          ⇥ and command recall ride the keyboard, ⇧ latches onto the next arrow or ⇥
+          ⇥, ⌫ and command recall sit in the pane, ⇧ latches onto the next arrow or ⇥
           — so ⇧⇥ is shift-Tab — and ^ opens all 26 control letters: ^C, ^L, ^O and
           the rest.</li>
+          <li>The command box takes more than one line: Return types a newline, and the
+          whole thing lands on the pane as one paste.</li>
+          <li>Tap a path a pane printed and read the file, coloured and at the line it
+          named; a picture draws, a binary is described.</li>
+          <li>Any of ~600 themes, served by the herd from the ones cmux and Ghostty
+          ship — filtered by name, each with a swatch.</li>
           <li>A dropped tunnel is a banner, not an empty screen.</li>
         </ul>
       </div>
@@ -325,7 +340,8 @@
       <figure class="lg:col-span-2">
         <img src="img/sheep-settings.png" class="shot mx-auto max-w-lg" alt="The Appearance settings pane: Catppuccin Mocha theme, terminal and interface font pickers with sizes, a preview, and a toggle reading Herd — each pane's status as a sheep">
         <figcaption class="shot-caption">The theme, both fonts, and the sheep — one toggle if you'd
-        rather not.</figcaption>
+        rather not. The theme list holds every palette cmux and Ghostty ship, ~600 of
+        them, filtered and grouped by where they came from.</figcaption>
       </figure>
     </div>
   </div>
