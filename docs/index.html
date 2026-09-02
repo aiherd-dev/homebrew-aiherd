@@ -105,9 +105,16 @@
       <p class="lead mt-3">The iPhone and Android apps are in testing. Leave a phone number and an
       email and we'll send you an invite.</p>
 
-      <!-- Formspark: a plain POST, so the form keeps the page's styling and the
-           site stays a static page with no backend. -->
-      <form action="https://submit-form.com/qngnUcoCG" method="POST" class="mt-6 space-y-3">
+      <p id="beta-thanks" hidden
+         class="mt-6 rounded-lg border border-primary-600 bg-primary-50 px-4 py-3 text-primary-900 dark:border-primary-500/60 dark:bg-primary-500/10 dark:text-primary-200">
+        You're on the list — we'll be in touch when the next build goes out.
+      </p>
+
+      <!-- A plain POST to our own box (subscribe.aiherd.dev, an ssh-managed
+           cloudflared tunnel), so the form keeps the page's styling and this
+           stays a static page. The 303 comes back to ?subscribed=1, which is
+           what reveals the message above. -->
+      <form id="beta-form" action="https://subscribe.aiherd.dev/" method="POST" class="mt-6 space-y-3">
         <input type="checkbox" name="_honeypot" style="display:none" tabindex="-1" autocomplete="off">
         <div>
           <label for="beta-email" class="block text-sm font-medium">Email</label>
@@ -138,6 +145,13 @@
 </footer>
 
 <script>
+  // The signup endpoint 303s back here with ?subscribed=1. Swap the form for a
+  // thank-you rather than leaving the visitor on a bare form they just filled.
+  if (new URLSearchParams(location.search).has("subscribed")) {
+    document.getElementById("beta-form").hidden = true;
+    document.getElementById("beta-thanks").hidden = false;
+  }
+
   // navigator.clipboard needs a secure context, so it's absent over plain http
   // (someone serving these docs locally). Fall back to a throwaway textarea +
   // execCommand, which still works everywhere that matters.
