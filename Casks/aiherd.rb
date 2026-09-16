@@ -16,27 +16,31 @@ cask "aiherd" do
   }
   sha256 native_arm ? shas[:arm] : shas[:intel]
 
-  url "https://github.com/aiherd-dev/homebrew-aiherd/releases/download/v#{version}/aiherd-#{version}-#{arch}-apple-darwin.pkg"
+  url "https://github.com/aiherd-dev/homebrew-aiherd/releases/download/v#{version}/aiherd-#{version}-#{arch}-apple-darwin.zip"
   name "aiherd"
   desc "Watch terminal panes and auto-detect/auto-approve prompts"
   homepage "https://aiherd-dev.github.io/"
 
   depends_on macos: :sonoma
 
-  # A signed, notarized and stapled installer laying down /Applications/
-  # AIHerd.app and /usr/local/bin/aih. No Python: the summarizer LLM runs
+  # A signed, notarized and stapled bundle. No Python: the summarizer LLM runs
   # in-process via llama.cpp, statically linked into `aih`.
   #
-  # No postflight xattr dance: installer payloads are not quarantined the way a
-  # downloaded archive's contents are, and the .pkg itself carries a stapled
-  # notarization ticket, so this validates with no network at all.
-  pkg "aiherd-#{version}-#{arch}-apple-darwin.pkg"
+  # The app carries the CLI at Contents/MacOS/aih, so `binary` only has to
+  # symlink it into HOMEBREW_PREFIX/bin — which brew owns. That is the whole
+  # reason this cask no longer asks for a password: the .pkg it replaced had to
+  # write root-owned /usr/local/bin/aih, so `installer` needed root. One file on
+  # disk also means `aih` can never be a version behind the app that spawns it.
+  app "AIHerd.app"
+  binary "#{appdir}/AIHerd.app/Contents/MacOS/aih"
 
-  # quit takes the app's bundle id, not the pkg id. Both: 0.4.13 and earlier
-  uninstall quit:    ["dev.aiherd.AIHerd"],
-            pkgutil: "ai.aiherd.suite",
-            delete:  [
-              "/Applications/AIHerd.app",
+  # quit takes the app's bundle id, not the pkg id. Both: 0.4.13 and earlier.
+  # AIHerd.app itself is the `app` stanza's job, not delete's. The rest only
+  # exist on a machine that came through an installer — brew uninstalls with the
+  # cask it installed with, so this is a net for a lost receipt, and it is also
+  # the only thing that clears an `aih` the old .pkg left on PATH.
+  uninstall quit:   ["dev.aiherd.AIHerd"],
+            delete: [
               # Pre-0.4.1 installs used this casing; keep it so an upgrade
               # removes the stale bundle instead of leaving two apps.
               "/Applications/Aiherd.app",
