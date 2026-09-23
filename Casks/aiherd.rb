@@ -41,9 +41,6 @@ cask "aiherd" do
   # the only thing that clears an `aih` the old .pkg left on PATH.
   uninstall quit:   ["dev.aiherd.AIHerd"],
             delete: [
-              # Pre-0.4.1 installs used this casing; keep it so an upgrade
-              # removes the stale bundle instead of leaving two apps.
-              "/Applications/Aiherd.app",
               "/usr/local/bin/aih",
               # Pre-0.3.1 installs staged CPython + mlx-lm wheels here.
               "/usr/local/share/aiherd",
