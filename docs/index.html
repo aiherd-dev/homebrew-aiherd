@@ -106,12 +106,12 @@
       closed — the pane, the question, and the sentences the summarizer wrote about it — and a tap
       lands in that pane. Answer it there and the Mac's badge clears too.</p>
 
-      <p class="lead mt-3">The iPhone and Android apps are in testing. Leave a phone number and an
-      email and we'll send you an invite.</p>
+      <p class="lead mt-3">The iPhone and Android apps are in testing. Choose your phone type and leave your details. We'll email you
+      installation instructions for your phone and Mac.</p>
 
       <p id="beta-thanks" hidden
          class="mt-6 rounded-lg border border-primary-600 bg-primary-50 px-4 py-3 text-primary-900 dark:border-primary-500/60 dark:bg-primary-500/10 dark:text-primary-200">
-        You're on the list — we'll be in touch when the next build goes out.
+        You're on the list — check your inbox for installation instructions. If you don't see them, check your spam folder.
       </p>
 
       <!-- A plain POST to our own box (subscribe.aiherd.dev, an ssh-managed
@@ -120,6 +120,15 @@
            what reveals the message above. -->
       <form id="beta-form" action="https://subscribe.aiherd.dev/" method="POST" class="mt-6 space-y-3">
         <input type="checkbox" name="_honeypot" style="display:none" tabindex="-1" autocomplete="off">
+        <div>
+          <label for="beta-platform" class="block text-sm font-medium">Phone type</label>
+          <select id="beta-platform" name="platform" required
+                  class="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-400 dark:border-gray-600 dark:bg-gray-800">
+            <option value="" disabled selected>Choose your phone</option>
+            <option value="android">Android</option>
+            <option value="iphone">iPhone</option>
+          </select>
+        </div>
         <div>
           <label for="beta-email" class="block text-sm font-medium">Email</label>
           <input id="beta-email" name="email" type="email" required autocomplete="email" placeholder="you@example.com"
@@ -134,7 +143,7 @@
                 class="w-full rounded-lg bg-primary-600 px-5 py-2.5 font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-400">
           Join the beta
         </button>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Used only to send the invite.</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Used only for beta access and installation instructions.</p>
       </form>
     </div>
   </div>
