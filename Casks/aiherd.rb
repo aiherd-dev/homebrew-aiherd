@@ -9,10 +9,10 @@ cask "aiherd" do
   native_arm = Hardware::CPU.physical_cpu_arm64?
   arch = native_arm ? "aarch64" : "x86_64"
 
-  version "0.5.20"
+  version "0.5.21"
   shas = {
-    arm:   "c85468a07903ce6a0c4ef2467087298fd137276de4002244c2bf6eca48c48625",
-    intel: "c7623707c5467249934fdf2300d62d063038733625fdf933f84b8b9c41f9b023",
+    arm:   "6d21bd64e74bea127bc1b279470bf13ce84efae20daadd477df25aeed40e282e",
+    intel: "df88bb99ce7cef01cbd64bca768c0c4dd0eee17069f44a408e697ed1694d8e63",
   }
   sha256 native_arm ? shas[:arm] : shas[:intel]
 
