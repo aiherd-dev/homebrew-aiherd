@@ -25,6 +25,18 @@
 }
 
 @layer components {
+  .install-tab {
+    @apply rounded-lg border border-gray-300 px-5 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-400 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800;
+  }
+  .install-tab[aria-selected="true"] {
+    @apply border-primary-600 bg-primary-50 text-primary-800 dark:border-primary-500 dark:bg-primary-500/10 dark:text-primary-300;
+  }
+  .install-command {
+    @apply flex flex-col gap-2 rounded-xl border border-primary-600 bg-primary-50 p-3 sm:flex-row sm:items-center dark:border-primary-500/60 dark:bg-primary-500/10;
+  }
+  .copy-command {
+    @apply shrink-0 rounded-lg border border-primary-600 px-4 py-2 text-lg leading-none text-primary-800 hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-primary-400 sm:px-3 dark:border-primary-500/60 dark:text-primary-300 dark:hover:bg-primary-500/20;
+  }
   /* Long command lines scroll inside their own frame — the page itself must
      never widen, which is what went wrong on phones before this rewrite. */
   .code-block {
