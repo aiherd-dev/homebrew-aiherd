@@ -9,16 +9,21 @@
 <link rel="icon" type="image/png" href="img/icon.png">
 <link rel="apple-touch-icon" href="img/icon.png">
 <link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/features.css">
 </head>
 <body class="bg-white text-gray-900 antialiased dark:bg-gray-900 dark:text-white">
 
 <header class="sticky top-0 z-20 border-b border-gray-200 bg-white/90 backdrop-blur dark:border-gray-700 dark:bg-gray-900/90">
-  <nav class="mx-auto flex max-w-screen-xl items-center justify-between px-4 py-3 lg:px-6">
+  <nav class="main-nav mx-auto flex max-w-screen-xl items-center justify-between px-4 py-3 lg:px-6">
     <a href="#top" class="flex items-center gap-2">
       <img src="img/icon.png" class="h-8 w-8" alt="">
       <span class="text-xl font-semibold">AIHerd</span>
     </a>
-    <a href="#beta" class="font-medium hover:text-primary-700 dark:hover:text-primary-400">Mobile beta</a>
+    <div class="section-links">
+      <a href="#local-agents">Local agents</a>
+      <a href="#remote-access">Remote access</a>
+      <a href="#beta">Mobile beta</a>
+    </div>
   </nav>
 </header>
 
@@ -35,7 +40,7 @@
     follows Ghostty, iTerm2, Terminal, tmux, cmux and Orca.
   </p>
 
-  <!-- Platform installation commands. -->
+  <!-- All platforms share one installation entry point. -->
   <div id="install" class="mx-auto mt-8 max-w-2xl text-left">
     <div role="tablist" aria-label="Installation platform" class="mb-3 flex gap-2">
       <button id="mac-tab" type="button" role="tab" aria-controls="mac-install" aria-selected="true" tabindex="0" class="install-tab" data-platform="mac">macOS</button>
@@ -74,72 +79,85 @@ aih login</code></pre>
       <p class="mt-3 text-sm"><a class="font-medium text-primary-700 underline dark:text-primary-400" href="https://github.com/aiherd-dev/aiherd/blob/main/scripts/install-linux.sh">Read the installer</a> · <a class="font-medium text-primary-700 underline dark:text-primary-400" href="https://github.com/aiherd-dev/aiherd/blob/main/docs/linux-build.md">Linux installation guide</a></p>
     </div>
     <div id="windows-install" role="tabpanel" aria-labelledby="windows-tab" hidden>
-      <p class="mb-3 lead">Run the Windows remote gateway as a background service, including after logout and reboot. Open PowerShell as Administrator.</p>
+      <p class="mb-3 lead">Install the Windows gateway for remote PowerShell terminals, SSH and RDP forwarding. The service starts automatically at boot.</p>
       <p class="mb-3 text-sm font-semibold">Requires a Windows ZIP in the latest release. If none is listed yet, wait for the next release.</p>
-      <p class="mt-5 mb-2 text-sm font-semibold">1. Install and start the service</p>
+      <p class="mb-2 text-sm font-semibold">1. Open PowerShell as Administrator and install</p>
       <div class="install-command">
         <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="windows-install-cmd">Invoke-WebRequest -UseBasicParsing https://aiherd.dev/install.ps1 -OutFile "$env:TEMP\aiherd-install.ps1"
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\aiherd-install.ps1"</code></pre>
         <button type="button" data-target="windows-install-cmd" aria-label="Copy the Windows install commands" title="Copy" class="copy-command">⧉</button>
       </div>
-      <p class="mt-5 mb-2 text-sm font-semibold">2. Sign in</p>
+      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">x64 Windows 10 1809 / Server 2019 or newer. Verifies the download checksum and installs into Program Files. Run the same commands to upgrade.</p>
+      <p class="mt-5 mb-2 text-sm font-semibold">2. Sign in, then pair your phone</p>
       <div class="install-command">
-        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="windows-login-cmd">&amp; "$env:ProgramFiles\AIHerd\aih.exe" login</code></pre>
-        <button type="button" data-target="windows-login-cmd" aria-label="Copy the Windows login commands" title="Copy" class="copy-command">⧉</button>
+        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="windows-login-cmd">&amp; "$env:ProgramFiles\AIHerd\aih.exe" login
+&amp; "$env:ProgramFiles\AIHerd\aih.exe" join</code></pre>
+        <button type="button" data-target="windows-login-cmd" aria-label="Copy the Windows sign-in and pairing commands" title="Copy" class="copy-command">⧉</button>
       </div>
-      <p class="mt-5 mb-2 text-sm font-semibold">3. Pair your mobile device</p>
-      <div class="install-command">
-        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="windows-join-cmd">&amp; "$env:ProgramFiles\AIHerd\aih.exe" join</code></pre>
-        <button type="button" data-target="windows-join-cmd" aria-label="Copy the Windows join commands" title="Copy" class="copy-command">⧉</button>
-      </div>
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Open the sign-in URL in your browser. Then scan the pairing QR code on your phone and approve it in PowerShell.</p>
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">x64 · Windows 10 1809 / Server 2019 or newer. Native PowerShell terminals, SSH and forwarding. This package is the remote gateway; desktop monitoring and local AI models are available on macOS and Linux.</p>
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">The service runs as LocalService. Its terminals use that account's permissions. Rerun the installer to upgrade; credentials are preserved and open shells close during restart.</p>
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Check the service: <code>Get-Service AIHerd</code>.</p>
-      <p class="mt-3 text-sm"><a class="font-medium text-primary-700 underline dark:text-primary-400" href="/install.ps1">Read the PowerShell installer</a> · <a class="font-medium text-primary-700 underline dark:text-primary-400" href="https://github.com/aiherd-dev/homebrew-aiherd/releases">Release downloads</a></p>
+      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Keep PowerShell elevated. Complete browser sign-in, then scan the pairing QR code and approve the request in the terminal.</p>
+      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">The service runs as LocalService; its terminals use that account. RDP must already be enabled on Windows. The Windows package has no desktop app or model summaries.</p>
+      <p class="mt-3 text-sm"><a class="font-medium text-primary-700 underline dark:text-primary-400" href="install.ps1">Read the installer</a> · <a class="font-medium text-primary-700 underline dark:text-primary-400" href="https://github.com/aiherd-dev/aiherd/blob/main/docs/windows-remote.md">Windows installation guide</a> · <a class="font-medium text-primary-700 underline dark:text-primary-400" href="https://github.com/aiherd-dev/homebrew-aiherd/releases/latest">Download ZIP</a></p>
     </div>
   </div>
 
-  <!-- Screenshots are their own pixel size; max-w keeps each near 1:1 rather
-       than upscaled soft. -->
-  <figure class="mt-10">
-    <img src="img/all-panes.png" class="shot mx-auto max-w-2xl" alt="The AIHerd window: a session sidebar listing panes with the question each is waiting on, and the selected pane's live screen beside it">
-    <figcaption class="shot-caption mx-auto max-w-2xl">Every pane on the machine down the side, what each one is
-    waiting on written under its name, and the one you picked live on the right.</figcaption>
-  </figure>
 </section>
 
-<!-- Screenshots -->
-<section class="border-t border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/40">
-  <div class="mx-auto max-w-screen-xl space-y-12 px-4 py-12 lg:px-6 lg:py-16">
-
-    <figure>
-      <img src="img/focus.png" class="shot mx-auto max-w-5xl" alt="A pane open full size inside AIHerd, with its scrollback, a command box, and esc, arrow and ctrl keys beneath it">
-      <figcaption class="shot-caption mx-auto max-w-5xl text-center">Open a pane and you can type into it —
-      command box, esc, arrows and ^ keys, exactly as if you were sitting in front of the terminal.</figcaption>
-    </figure>
-
-    <figure>
-      <img src="img/search-history.png" class="shot mx-auto max-w-5xl" alt="The search tab: a query with 20 hits in 8 sessions listed down the left, and the selected hit's summary and matching lines on the right">
-      <figcaption class="shot-caption mx-auto max-w-5xl text-center">Search greps live screens and every session
-      it has ever stored, and says in a line why each hit is a match.</figcaption>
-    </figure>
-
-    <div class="grid gap-10 md:grid-cols-3">
-      <figure>
-        <img src="img/serve-on-the-cloud.png" class="shot" alt="The herd cloud popover: a Stop button, copy-link and QR buttons for the app and for a website, and a bar chart of bytes carried over the last seven days">
-        <figcaption class="shot-caption">One button publishes the herd through the relay, which carries bytes it
-        cannot read.</figcaption>
+<section id="local-agents" class="feature-section" aria-labelledby="local-heading">
+  <div class="feature-wrap">
+    <div class="section-heading">
+      <div>
+        <h2 id="local-heading">Local agents</h2>
+        <p>Live screens, waiting questions, and session history. Your agents together on your Mac.</p>
+      </div>
+      <div class="gallery-controls" hidden>
+        <span id="gallery-position" aria-live="polite">1 / 3</span>
+        <button type="button" id="gallery-prev" aria-label="Previous agent screenshot" aria-controls="agent-gallery">‹</button>
+        <button type="button" id="gallery-next" aria-label="Next agent screenshot" aria-controls="agent-gallery">›</button>
+      </div>
+    </div>
+    <div id="agent-gallery" class="agent-gallery" tabindex="0" role="region" aria-label="Local agent screenshots; scroll horizontally to explore" aria-describedby="gallery-hint">
+      <figure class="agent-slide">
+        <img src="img/mac-live.png" width="1089" height="821" alt="The native AIHerd Mac app showing live terminal panes, summaries, and questions waiting for input in the session sidebar">
+        <figcaption><h3>See who needs you</h3><p>The native Mac app keeps your agents' live screens, summaries, and waiting questions together in one window.</p></figcaption>
       </figure>
-      <figure>
-        <img src="img/claude-agents.png" class="shot" alt="The agents popover: one Claude Code background session, its task, its blocked state and its directory">
-        <figcaption class="shot-caption">Claude Code background sessions have no terminal to look at, so they get
-        their own list — this one is blocked.</figcaption>
+      <figure class="agent-slide">
+        <img src="img/mac-topics.png" width="976" height="679" loading="lazy" alt="AIHerd's Mac session sidebar with shared-topic groups, working directories, agent filters, and a live terminal screen">
+        <figcaption><h3>Find related work</h3><p>Use shared-topic groups, or narrow the session sidebar by directory and agent.</p></figcaption>
       </figure>
-      <figure>
-        <img src="img/resize.png" class="shot" alt="The tile size popover: a slider reading 420pt and 12 lines">
-        <figcaption class="shot-caption">Tile size is one slider: a notch up is one fewer column and that much
-        more of every screen.</figcaption>
+      <figure class="agent-slide">
+        <img src="img/mac-history.png" width="2200" height="1640" loading="lazy" alt="The native Mac app's Past tab with a session activity chart, recorded sessions, and the selected session's summary and terminal output">
+        <figcaption><h3>Pick up past sessions</h3><p>Past sessions keep their summaries and captured screens. Revisit the work or open its pane.</p></figcaption>
+      </figure>
+    </div>
+    <p id="gallery-hint" class="gallery-hint">Scroll sideways or swipe to explore.</p>
+  </div>
+</section>
+
+<section id="remote-access" class="feature-section remote-section" aria-labelledby="remote-heading">
+  <div class="feature-wrap">
+    <div class="section-heading">
+      <div>
+        <h2 id="remote-heading">Remote access</h2>
+        <p>Your Mac, wherever you are. Connect from mobile, SSH, or VNC.</p>
+      </div>
+    </div>
+    <figure class="remote-demo">
+      <video controls playsinline preload="metadata" poster="img/ssh-wifi-roaming.jpg" width="1034" height="582" aria-label="Recording of an aih SSH session staying alive through a network interruption" aria-describedby="roaming-caption">
+        <source src="video/ssh-wifi-roaming.mp4" type="video/mp4">
+        <a href="video/ssh-wifi-roaming.mp4">Watch the SSH connection recording.</a>
+      </video>
+      <figcaption id="roaming-caption">Through <code>aih</code>, your SSH connection stays alive even after switching Wi-Fi.</figcaption>
+    </figure>
+    <div class="remote-details">
+      <div class="remote-copy">
+        <h3>The tools you already use</h3>
+        <p>Use standard SSH, SCP, and rsync. AIHerd speaks 100% standard SSH and SFTP, so you can also browse and transfer files with <a href="https://cyberduck.io/">Cyberduck</a>.</p>
+        <h3>Your herd on the go</h3>
+        <p>Open your agents on mobile, keep a terminal session going through network changes, or access your Mac's desktop through VNC. The herd connection menu brings your remote access together.</p>
+      </div>
+      <figure class="herd-connection">
+        <img src="img/mac-connection.png" width="808" height="1078" loading="lazy" alt="The native Mac app's herd cloud connection menu with relay status, screen sharing, mobile and website links, and connection traffic">
+        <figcaption>The herd connection menu in the Mac app.</figcaption>
       </figure>
     </div>
   </div>
@@ -147,13 +165,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\aiherd-instal
 
 <!-- Mobile beta -->
 <section id="beta" class="border-t border-gray-200 dark:border-gray-700">
-  <div class="mx-auto grid max-w-screen-lg items-center gap-10 px-4 py-12 sm:grid-cols-2 lg:px-6 lg:py-16">
-    <figure>
-      <img src="img/phone-list.png" class="shot mx-auto max-w-xs" alt="The iPhone app's pane list: a card for a pane waiting on a question with its answer options as tappable chips, and cards for working panes with their topics and summaries">
-      <figcaption class="shot-caption text-center">The agents run on the machine under your desk; the phone in your
-      pocket answers what they are blocked on.</figcaption>
-    </figure>
-
+  <div class="mx-auto max-w-2xl px-4 py-12 lg:px-6 lg:py-16">
     <div>
       <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Join the mobile beta</h2>
       <p class="lead mt-3">A pane that stops to ask something notifies the phone even with the app
@@ -161,7 +173,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\aiherd-instal
       lands in that pane. Answer it there and the Mac's badge clears too.</p>
 
       <p class="lead mt-3">The iPhone and Android apps are in testing. Choose your phone type and leave your details. We'll email you
-      installation instructions for your phone and Mac.</p>
+      installation instructions for your phone and computer.</p>
 
       <p id="beta-thanks" hidden
          class="mt-6 rounded-lg border border-primary-600 bg-primary-50 px-4 py-3 text-primary-900 dark:border-primary-500/60 dark:bg-primary-500/10 dark:text-primary-200">
@@ -207,7 +219,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\aiherd-instal
 
 <footer class="border-t border-gray-200 dark:border-gray-700">
   <div class="prose-block mx-auto max-w-screen-xl px-4 py-8 text-sm text-gray-500 lg:px-6 dark:text-gray-400">
-    Installed from the <a href="https://github.com/aiherd-dev/homebrew-aiherd">aiherd-dev/aiherd</a> tap.
+    <a href="mailto:support@aiherd.dev">Support: support@aiherd.dev</a> · <a href="/privacy.html">Privacy Policy</a><br>
+    macOS via the <a href="https://github.com/aiherd-dev/homebrew-aiherd">aiherd-dev/aiherd</a> tap · Linux and Windows via <a href="https://github.com/aiherd-dev/homebrew-aiherd/releases">verified GitHub releases</a>.
   </div>
 </footer>
 
@@ -218,6 +231,39 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\aiherd-instal
     document.getElementById("beta-form").hidden = true;
     document.getElementById("beta-thanks").hidden = false;
   }
+
+  const gallery = document.getElementById("agent-gallery");
+  const slides = [...gallery.querySelectorAll(".agent-slide")];
+  const previous = document.getElementById("gallery-prev");
+  const next = document.getElementById("gallery-next");
+  const position = document.getElementById("gallery-position");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let activeSlide = 0;
+  const slidePosition = (slide) => slide.getBoundingClientRect().left - gallery.getBoundingClientRect().left + gallery.scrollLeft;
+  function updateGallery() {
+    activeSlide = slides.reduce((nearest, slide, index) =>
+      Math.abs(slidePosition(slide) - gallery.scrollLeft) <
+      Math.abs(slidePosition(slides[nearest]) - gallery.scrollLeft) ? index : nearest, 0);
+    position.textContent = `${activeSlide + 1} / ${slides.length}`;
+    previous.disabled = activeSlide === 0;
+    next.disabled = activeSlide === slides.length - 1;
+  }
+  function moveGallery(index) {
+    gallery.scrollTo({left: slidePosition(slides[index]),
+      behavior: reducedMotion.matches ? "instant" : "smooth"});
+  }
+  previous.addEventListener("click", () => moveGallery(Math.max(0, activeSlide - 1)));
+  next.addEventListener("click", () => moveGallery(Math.min(slides.length - 1, activeSlide + 1)));
+  gallery.addEventListener("keydown", (event) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    moveGallery(event.key === "Home" ? 0 : event.key === "End" ? slides.length - 1 :
+      Math.max(0, Math.min(slides.length - 1, activeSlide + (event.key === "ArrowRight" ? 1 : -1))));
+  });
+  gallery.addEventListener("scroll", updateGallery, {passive: true});
+  window.addEventListener("resize", updateGallery);
+  document.querySelector(".gallery-controls").hidden = false;
+  updateGallery();
 
   const tabs = [...document.querySelectorAll('[role="tab"][data-platform]')];
   function selectPlatform(platform, focus = false) {
@@ -244,7 +290,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\aiherd-instal
     });
   });
   const requestedPlatform = new URLSearchParams(location.search).get("platform");
-  selectPlatform(["linux", "mac", "windows"].includes(requestedPlatform) ? requestedPlatform : (/Win/.test(navigator.platform) ? "windows" : /Linux/.test(navigator.platform) && !/Android/.test(navigator.userAgent) ? "linux" : "mac"));
+  selectPlatform(["mac", "linux", "windows"].includes(requestedPlatform) ? requestedPlatform : (/Win/.test(navigator.platform) ? "windows" : /Linux/.test(navigator.platform) && !/Android/.test(navigator.userAgent) ? "linux" : "mac"));
 
   // navigator.clipboard needs a secure context, so it's absent over plain http
   // (someone serving these docs locally). Fall back to a throwaway textarea +

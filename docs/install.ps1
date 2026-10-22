@@ -68,39 +68,51 @@ try {
     $expected=((Get-Content -Raw -LiteralPath $ChecksumPath).Trim() -split '\s+')[0]
     if($expected -notmatch '^[0-9a-fA-F]{64}$'){throw 'Invalid release checksum.'}
     if((Get-FileHash -LiteralPath $ArchivePath -Algorithm SHA256).Hash -ne $expected){throw 'Release checksum mismatch. Nothing was installed.'}
-    # Extract only the expected executable; never follow archive paths.
+    # Extract only the expected executables; never follow archive paths.
+    $programs=@('aih.exe','aih-rdpauth.exe','aih-tty.exe')
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     $zip=[IO.Compression.ZipFile]::OpenRead((Resolve-Path -LiteralPath $ArchivePath).Path)
     try {
-        $entries=@($zip.Entries | Where-Object FullName -eq 'aih.exe')
-        if($entries.Count -ne 1){throw 'Release must contain exactly one aih.exe at its root.'}
-        $staged=Join-Path $work 'aih.exe'
-        [IO.Compression.ZipFileExtensions]::ExtractToFile($entries[0],$staged)
+        foreach($program in $programs){
+            $entries=@($zip.Entries | Where-Object FullName -eq $program)
+            if($entries.Count -ne 1){throw "Release must contain exactly one $program at its root."}
+            [IO.Compression.ZipFileExtensions]::ExtractToFile($entries[0],(Join-Path $work $program))
+        }
     } finally { $zip.Dispose() }
-    & $staged --version
-    if($LASTEXITCODE -ne 0){throw 'Downloaded executable failed its version check.'}
+    foreach($program in $programs){
+        & (Join-Path $work $program) --version
+        if($LASTEXITCODE -ne 0){throw "$program failed its version check."}
+    }
 
     # Program files must not be replaceable by unprivileged users. LocalService
-    # gets read/execute here and its own protected writable data root separately.
+    # and desktop users get read/execute here. Credentials remain in separate
+    # private data roots; Users must never get write access to service executables.
     New-Item -ItemType Directory -Force $InstallDir | Out-Null
     $acl=[Security.AccessControl.DirectorySecurity]::new()
     $acl.SetAccessRuleProtection($true,$false)
-    foreach($sid in @('S-1-5-18','S-1-5-32-544','S-1-5-19')){
-        $rights=if($sid -eq 'S-1-5-19'){'ReadAndExecute'}else{'FullControl'}
+    foreach($sid in @('S-1-5-18','S-1-5-32-544','S-1-5-19','S-1-5-32-545')){
+        $rights=if($sid -in @('S-1-5-19','S-1-5-32-545')){'ReadAndExecute'}else{'FullControl'}
         $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new([Security.Principal.SecurityIdentifier]::new($sid),$rights,'ContainerInherit,ObjectInherit','None','Allow'))
     }
     Set-Acl -LiteralPath $InstallDir -AclObject $acl
-    $backup=Join-Path $work 'previous.exe'
+    $backup=Join-Path $work 'previous'
+    New-Item -ItemType Directory $backup | Out-Null
     $wasRunning=$service -and $service.State -ne 'Stopped'
-    if(Test-Path -LiteralPath $binary){Copy-Item -LiteralPath $binary -Destination $backup}
+    foreach($program in $programs){
+        $installed=Join-Path $InstallDir $program
+        if(Test-Path -LiteralPath $installed){Copy-Item -LiteralPath $installed -Destination (Join-Path $backup $program)}
+    }
     if($wasRunning){
         & $binary service stop --name $ServiceName
         if($LASTEXITCODE -ne 0){throw 'Service stop failed; executable was not replaced.'}
     }
     $created=$false
     try {
-        if(Test-Path -LiteralPath $binary){Remove-Item -LiteralPath $binary -Force}
-        Copy-Item -LiteralPath $staged -Destination $binary
+        foreach($program in $programs){
+            $installed=Join-Path $InstallDir $program
+            if(Test-Path -LiteralPath $installed){Remove-Item -LiteralPath $installed -Force}
+            Copy-Item -LiteralPath (Join-Path $work $program) -Destination $installed
+        }
         if(-not $service){
             $installArgs=@('service','install','--name',$ServiceName,'--root',$Root,'--proxy',$Relay)
             if($Scratch){$installArgs+='--scratch'}
@@ -120,10 +132,13 @@ try {
         $failure=$_
         Stop-Service $ServiceName -ErrorAction SilentlyContinue
         if($created){& $binary service uninstall --name $ServiceName | Out-Null}
-        if(Test-Path -LiteralPath $backup){
-            Copy-Item -LiteralPath $backup -Destination $binary -Force
-            if($wasRunning){& $binary service start --name $ServiceName | Out-Null}
+        foreach($program in $programs){
+            $installed=Join-Path $InstallDir $program
+            $previous=Join-Path $backup $program
+            if(Test-Path -LiteralPath $previous){Copy-Item -LiteralPath $previous -Destination $installed -Force}
+            elseif(Test-Path -LiteralPath $installed){Remove-Item -LiteralPath $installed -Force}
         }
+        if($wasRunning){& $binary service start --name $ServiceName | Out-Null}
         throw $failure
     }
     $suffix=if($ServiceName -eq 'AIHerd'){''}else{' --socket \\.\pipe\aiherd-service-'+$ServiceName}
