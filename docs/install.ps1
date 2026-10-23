@@ -34,6 +34,44 @@ foreach($path in @($InstallDir,$Root)) {
 $InstallDir=[IO.Path]::GetFullPath($InstallDir)
 $Root=[IO.Path]::GetFullPath($Root)
 if($InstallDir -eq $Root){throw 'The program directory and service data root must differ.'}
+function Add-InstallDirToPath {
+    $key=[Microsoft.Win32.RegistryKey]::OpenBaseKey('LocalMachine','Registry64').OpenSubKey('SYSTEM\CurrentControlSet\Control\Session Manager\Environment',$true)
+    if(-not $key){throw 'Could not open the machine environment registry key.'}
+    try {
+        $current=[string]$key.GetValue('Path','',[Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames)
+        $target=$InstallDir.TrimEnd([char[]]@('\','/'))
+        foreach($entry in ($current -split ';')) {
+            $expanded=[Environment]::ExpandEnvironmentVariables($entry.Trim().Trim('"')).TrimEnd([char[]]@('\','/'))
+            if($expanded -ieq $target){return}
+        }
+        $updated=$current.TrimEnd(';')+';'+$InstallDir
+        if(-not $current){$updated=$InstallDir}
+        $kind=if($key.GetValueNames() -contains 'Path'){$key.GetValueKind('Path')}else{[Microsoft.Win32.RegistryValueKind]::ExpandString}
+        $key.SetValue('Path',$updated,$kind)
+    } finally {$key.Dispose()}
+    $env:Path += ';'+$InstallDir
+    # Explorer and other long-lived processes refresh their environment after this message.
+    # Registry persistence is sufficient for new sessions if this notification is unavailable.
+    try {
+        if(-not ('AIHerd.PathNotification' -as [type])) {
+            Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+namespace AIHerd {
+    public static class PathNotification {
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern IntPtr SendMessageTimeout(IntPtr window, uint message, IntPtr wParam,
+            string lParam, uint flags, uint timeout, out IntPtr result);
+    }
+}
+'@
+        }
+        $result=[IntPtr]::Zero
+        [void][AIHerd.PathNotification]::SendMessageTimeout([IntPtr]0xffff,0x1a,[IntPtr]::Zero,'Environment',2,5000,[ref]$result)
+    } catch {
+        Write-Warning "PATH was saved, but Windows did not receive its change notification: $($_.Exception.Message)"
+    }
+}
 $binary=Join-Path $InstallDir 'aih.exe'
 $service=Get-CimInstance Win32_Service | Where-Object Name -eq $ServiceName
 if($service){
@@ -128,6 +166,7 @@ try {
             if((Get-Service $ServiceName).Status -eq 'Running'){$running=$true;break}
         }
         if(-not $running){throw 'Service failed to reach Running.'}
+        Add-InstallDirToPath
     } catch {
         $failure=$_
         Stop-Service $ServiceName -ErrorAction SilentlyContinue
@@ -143,6 +182,7 @@ try {
     }
     $suffix=if($ServiceName -eq 'AIHerd'){''}else{' --socket \\.\pipe\aiherd-service-'+$ServiceName}
     Write-Host "AIHerd is installed and running as LocalService (automatic startup)."
+    Write-Host "aih is available on PATH in new terminals. Open a new PowerShell window to use it."
     Write-Host "Complete browser sign-in, then pair your phone:"
     Write-Host "& '$binary' login$suffix"
     Write-Host "& '$binary' join$suffix"
