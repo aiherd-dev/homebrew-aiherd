@@ -34,17 +34,11 @@ cask "aiherd" do
   app "AIHerd.app"
   binary "#{appdir}/AIHerd.app/Contents/MacOS/aih"
 
-  # quit takes the app's bundle id, not the pkg id. Both: 0.4.13 and earlier.
-  # AIHerd.app itself is the `app` stanza's job, not delete's. The rest only
-  # exist on a machine that came through an installer — brew uninstalls with the
-  # cask it installed with, so this is a net for a lost receipt, and it is also
-  # the only thing that clears an `aih` the old .pkg left on PATH.
-  uninstall quit:   ["dev.aiherd.AIHerd"],
-            delete: [
-              "/usr/local/bin/aih",
-              # Pre-0.3.1 installs staged CPython + mlx-lm wheels here.
-              "/usr/local/share/aiherd",
-            ]
+  # `app` and `binary` own their removal, including the CLI symlink in
+  # HOMEBREW_PREFIX/bin. Do not add legacy /usr/local cleanup here:
+  # Homebrew runs `uninstall delete:` through sudo even for missing paths,
+  # and runs uninstall directives during every upgrade.
+  uninstall quit: ["dev.aiherd.AIHerd"]
 
   # The text index, settings and downloaded model weights the CLI builds at
   # runtime; `brew uninstall --zap` removes them, plain uninstall leaves them.
