@@ -133,58 +133,46 @@ try {
         $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new([Security.Principal.SecurityIdentifier]::new($sid),$rights,'ContainerInherit,ObjectInherit','None','Allow'))
     }
     Set-Acl -LiteralPath $InstallDir -AclObject $acl
-    $backup=Join-Path $work 'previous'
-    New-Item -ItemType Directory $backup | Out-Null
-    $wasRunning=$service -and $service.State -ne 'Stopped'
-    foreach($program in $programs){
-        $installed=Join-Path $InstallDir $program
-        if(Test-Path -LiteralPath $installed){Copy-Item -LiteralPath $installed -Destination (Join-Path $backup $program)}
-    }
-    if($wasRunning){
-        & $binary service stop --name $ServiceName
-        if($LASTEXITCODE -ne 0){throw 'Service stop failed; executable was not replaced.'}
-    }
-    $created=$false
-    try {
+    if($service){
+        # The installed CLI owns preflight, graceful stop, mapped-image
+        # replacement, readiness verification and rollback as one transaction.
+        $upgradeArgs=@('service','upgrade','--name',$ServiceName,'--from',$work)
+        if($Scratch){$upgradeArgs+='--scratch'}
+        & $binary @upgradeArgs
+        if($LASTEXITCODE -ne 0){throw 'Service upgrade failed; see aih diagnostics above.'}
+    } else {
         foreach($program in $programs){
-            $installed=Join-Path $InstallDir $program
-            if(Test-Path -LiteralPath $installed){Remove-Item -LiteralPath $installed -Force}
-            Copy-Item -LiteralPath (Join-Path $work $program) -Destination $installed
+            Copy-Item -LiteralPath (Join-Path $work $program) -Destination (Join-Path $InstallDir $program)
         }
-        if(-not $service){
+        $created=$false
+        try {
             $installArgs=@('service','install','--name',$ServiceName,'--root',$Root,'--proxy',$Relay)
             if($Scratch){$installArgs+='--scratch'}
             & $binary @installArgs
             if($LASTEXITCODE -ne 0){throw 'Service installation failed.'}
             $created=$true
+            & $binary service start --name $ServiceName
+            if($LASTEXITCODE -ne 0){throw 'Service start failed.'}
+            $running=$false
+            for($i=0;$i -lt 30;$i++){
+                Start-Sleep -Milliseconds 500
+                if((Get-Service $ServiceName).Status -eq 'Running'){$running=$true;break}
+            }
+            if(-not $running){throw 'Service failed to reach Running.'}
+        } catch {
+            if($created){
+                Stop-Service $ServiceName -ErrorAction SilentlyContinue
+                & $binary service uninstall --name $ServiceName | Out-Null
+            }
+            throw
         }
-        & $binary service start --name $ServiceName
-        if($LASTEXITCODE -ne 0){throw 'Service start failed.'}
-        $running=$false
-        for($i=0;$i -lt 30;$i++){
-            Start-Sleep -Milliseconds 500
-            if((Get-Service $ServiceName).Status -eq 'Running'){$running=$true;break}
-        }
-        if(-not $running){throw 'Service failed to reach Running.'}
-        Add-InstallDirToPath
-    } catch {
-        $failure=$_
-        Stop-Service $ServiceName -ErrorAction SilentlyContinue
-        if($created){& $binary service uninstall --name $ServiceName | Out-Null}
-        foreach($program in $programs){
-            $installed=Join-Path $InstallDir $program
-            $previous=Join-Path $backup $program
-            if(Test-Path -LiteralPath $previous){Copy-Item -LiteralPath $previous -Destination $installed -Force}
-            elseif(Test-Path -LiteralPath $installed){Remove-Item -LiteralPath $installed -Force}
-        }
-        if($wasRunning){& $binary service start --name $ServiceName | Out-Null}
-        throw $failure
     }
+    Add-InstallDirToPath
     $suffix=if($ServiceName -eq 'AIHerd'){''}else{' --socket \\.\pipe\aiherd-service-'+$ServiceName}
     Write-Host "AIHerd is installed and running as LocalService (automatic startup)."
     Write-Host "aih is available on PATH in new terminals. Open a new PowerShell window to use it."
     Write-Host "Complete browser sign-in, then pair your phone:"
     Write-Host "& '$binary' login$suffix"
     Write-Host "& '$binary' join$suffix"
-    Write-Host 'Upgrades preserve service settings and credentials; existing shells close during restart.'
+    Write-Host 'Upgrades preserve service settings, credentials, and active SSH connections.'
 } finally { Remove-Item -LiteralPath $work -Recurse -Force -ErrorAction SilentlyContinue }

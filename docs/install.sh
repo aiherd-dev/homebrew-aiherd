@@ -59,7 +59,7 @@ actual=$(sha256sum "$work/$archive" | awk '{ print $1 }')
 
 mkdir "$work/package"
 tar -xzf "$work/$archive" --strip-components=1 -C "$work/package"
-for binary in aih aih-fdkeeper aih-rdpauth; do
+for binary in aih aih-tty aih-fdkeeper aih-rdpauth; do
   [ -f "$work/package/bin/$binary" ] && [ ! -L "$work/package/bin/$binary" ] || fail "Release is missing bin/$binary."
   if [ "$libc" = gnu ]; then
     if ! libraries=$(ldd "$work/package/bin/$binary" 2>&1) || printf '%s\n' "$libraries" | grep -q 'not found'; then
@@ -91,7 +91,7 @@ systemctl --user show-environment >/dev/null 2>&1 || fail 'No systemd user manag
 bindir=${AIHERD_BIN_DIR:-$HOME/.local/bin}
 case "$bindir" in /*) ;; *) fail 'AIHERD_BIN_DIR must be an absolute path.' ;; esac
 mkdir -p "$bindir"
-for binary in aih aih-fdkeeper aih-rdpauth; do
+for binary in aih aih-tty aih-fdkeeper aih-rdpauth; do
   install -m 755 "$work/package/bin/$binary" "$bindir/.$binary-install-$$"
   mv -f "$bindir/.$binary-install-$$" "$bindir/$binary"
 done
