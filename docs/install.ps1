@@ -6,6 +6,8 @@ param(
     [string]$Root = "$env:ProgramData\AIHerd",
     [ValidatePattern('^[A-Za-z0-9-]+$')][string]$ServiceName = 'AIHerd',
     [string]$Relay = 'wss://oci01.aiherd.dev',
+    # Defaults to the installing account, or preserves an existing desktop owner.
+    [string]$DesktopUserSid,
     [Parameter(Mandatory=$true,ParameterSetName='Offline')][string]$ArchivePath,
     [Parameter(Mandatory=$true,ParameterSetName='Offline')][string]$ChecksumPath,
     # For isolated acceptance rigs only; persisted in the service command line.
@@ -74,6 +76,11 @@ namespace AIHerd {
 }
 $binary=Join-Path $InstallDir 'aih.exe'
 $service=Get-CimInstance Win32_Service | Where-Object Name -eq $ServiceName
+if(-not $DesktopUserSid){
+    if($service -and $service.PathName -match '--desktop-user-sid\s+"?(S-[0-9-]+)'){$DesktopUserSid=$Matches[1]}
+    else {$DesktopUserSid=$identity.User.Value}
+}
+$DesktopUserSid=([Security.Principal.SecurityIdentifier]::new($DesktopUserSid)).Value
 if($service){
     # Do not take over a same-named service belonging to another installation.
     $command=$service.PathName
@@ -106,7 +113,8 @@ try {
     $expected=((Get-Content -Raw -LiteralPath $ChecksumPath).Trim() -split '\s+')[0]
     if($expected -notmatch '^[0-9a-fA-F]{64}$'){throw 'Invalid release checksum.'}
     if((Get-FileHash -LiteralPath $ArchivePath -Algorithm SHA256).Hash -ne $expected){throw 'Release checksum mismatch. Nothing was installed.'}
-    # Extract only the expected executables; never follow archive paths.
+    # Extract known programs and the complete UI tree. Validate every UI entry
+    # before writing anything, including duplicate/case-colliding Windows paths.
     $programs=@('aih.exe','aih-rdpauth.exe','aih-tty.exe')
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     $zip=[IO.Compression.ZipFile]::OpenRead((Resolve-Path -LiteralPath $ArchivePath).Path)
@@ -115,6 +123,27 @@ try {
             $entries=@($zip.Entries | Where-Object FullName -eq $program)
             if($entries.Count -ne 1){throw "Release must contain exactly one $program at its root."}
             [IO.Compression.ZipFileExtensions]::ExtractToFile($entries[0],(Join-Path $work $program))
+        }
+        $uiEntries=@($zip.Entries | Where-Object { $_.FullName.StartsWith('ui/',[StringComparison]::OrdinalIgnoreCase) -and -not $_.FullName.EndsWith('/') })
+        $hasUi=$uiEntries.Count -gt 0
+        $seen=[Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+        foreach($entry in $uiEntries){
+            $relative=$entry.FullName.Substring(3)
+            if($relative -match '[\\:<>"|?*\x00-\x1f]' -or @($relative -split '/' | Where-Object { -not $_ -or $_ -in @('.','..') -or $_ -match '[. ]$' -or $_ -match '^(CON|PRN|AUX|NUL|COM[0-9]|LPT[0-9])(?:\.|$)' }).Count -gt 0){throw 'Unsafe UI archive path'}
+            if(-not $seen.Add($relative)){throw 'Duplicate UI archive path'}
+            if((($entry.ExternalAttributes -shr 16) -band 0xF000) -eq 0xA000){throw 'UI archive links are not allowed'}
+        }
+        if($hasUi){
+            foreach($required in @('AIHerd.Windows.exe','AIHerd.Windows.dll','AIHerd.Windows.pri','AIHerd.Windows.deps.json','AIHerd.Windows.runtimeconfig.json')){
+                if(-not $seen.Contains($required)){throw "UI package is missing $required"}
+            }
+            $uiStage=Join-Path $work 'ui'
+            New-Item -ItemType Directory $uiStage | Out-Null
+            foreach($entry in $uiEntries){
+                $destination=Join-Path $uiStage $entry.FullName.Substring(3)
+                New-Item -ItemType Directory -Force (Split-Path $destination) | Out-Null
+                [IO.Compression.ZipFileExtensions]::ExtractToFile($entry,$destination)
+            }
         }
     } finally { $zip.Dispose() }
     foreach($program in $programs){
@@ -127,12 +156,27 @@ try {
     # private data roots; Users must never get write access to service executables.
     New-Item -ItemType Directory -Force $InstallDir | Out-Null
     $acl=[Security.AccessControl.DirectorySecurity]::new()
+    $acl.SetOwner([Security.Principal.SecurityIdentifier]::new('S-1-5-32-544'))
     $acl.SetAccessRuleProtection($true,$false)
     foreach($sid in @('S-1-5-18','S-1-5-32-544','S-1-5-19','S-1-5-32-545')){
         $rights=if($sid -in @('S-1-5-19','S-1-5-32-545')){'ReadAndExecute'}else{'FullControl'}
         $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new([Security.Principal.SecurityIdentifier]::new($sid),$rights,'ContainerInherit,ObjectInherit','None','Allow'))
     }
     Set-Acl -LiteralPath $InstallDir -AclObject $acl
+    $uiDestination=$null
+    if($hasUi){
+        # Versioned folders let running UI instances finish while an upgrade is
+        # staged. Publish the shortcut only after service upgrade/access succeeds.
+        $uiDestination=Join-Path $InstallDir ('ui\'+$expected.ToLowerInvariant())
+        foreach($path in @((Join-Path $InstallDir 'ui'),$uiDestination,(Join-Path $uiDestination 'service.json'))){
+            if((Test-Path -LiteralPath $path) -and ((Get-Item -Force -LiteralPath $path).Attributes -band [IO.FileAttributes]::ReparsePoint)){throw 'Refusing a UI installation reparse point'}
+        }
+        if(-not (Test-Path $uiDestination)){
+            New-Item -ItemType Directory -Force $uiDestination | Out-Null
+            Copy-Item (Join-Path $uiStage '*') $uiDestination -Recurse -Force
+        }
+        @{pipe=('\\.\pipe\aiherd-service-'+$ServiceName)} | ConvertTo-Json | Set-Content -Encoding UTF8 (Join-Path $uiDestination 'service.json')
+    }
     if($service){
         # The installed CLI owns preflight, graceful stop, mapped-image
         # replacement, readiness verification and rollback as one transaction.
@@ -147,6 +191,7 @@ try {
         $created=$false
         try {
             $installArgs=@('service','install','--name',$ServiceName,'--root',$Root,'--proxy',$Relay)
+            if($hasUi){$installArgs+=@('--desktop-user-sid',$DesktopUserSid)}
             if($Scratch){$installArgs+='--scratch'}
             & $binary @installArgs
             if($LASTEXITCODE -ne 0){throw 'Service installation failed.'}
@@ -166,6 +211,21 @@ try {
             }
             throw
         }
+    }
+    if($hasUi){
+        & $binary service desktop-access --name $ServiceName --user-sid $DesktopUserSid
+        if($LASTEXITCODE -ne 0){throw 'Desktop service access configuration failed; existing shortcut was preserved.'}
+        & icacls.exe $InstallDir /setowner '*S-1-5-32-544' /T /C | Out-Null
+        if($LASTEXITCODE -ne 0){throw 'Could not protect ownership of installed program files'}
+        $shortcutName=if($ServiceName -eq 'AIHerd'){'AIHerd'}else{'AIHerd-'+$ServiceName}
+        $shortcutPath=Join-Path ([Environment]::GetFolderPath('CommonPrograms')) ($shortcutName+'.lnk')
+        $shell=New-Object -ComObject WScript.Shell
+        $shortcut=$shell.CreateShortcut($shortcutPath)
+        $shortcut.TargetPath=Join-Path $uiDestination 'AIHerd.Windows.exe'
+        $shortcut.WorkingDirectory=$uiDestination
+        $shortcut.Description='AIHerd Windows dashboard'
+        $shortcut.Save()
+        Write-Host "Open $shortcutName from the Start menu. The UI connects to the service without elevation."
     }
     Add-InstallDirToPath
     $suffix=if($ServiceName -eq 'AIHerd'){''}else{' --socket \\.\pipe\aiherd-service-'+$ServiceName}
