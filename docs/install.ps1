@@ -35,6 +35,16 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 # These helpers are inline because the website distributes only install.ps1.
+function Save-AIHDownload {
+    param(
+        [Parameter(Mandatory=$true)][string]$Uri,
+        [Parameter(Mandatory=$true)][string]$OutFile
+    )
+    # Windows PowerShell 5.1 progress rendering can dominate large downloads.
+    # Keep this preference local to the request, including when it throws.
+    $ProgressPreference='SilentlyContinue'
+    Invoke-WebRequest -UseBasicParsing -Uri $Uri -OutFile $OutFile -TimeoutSec 900
+}
 function Get-AIHDesktopHostManifest {
     param([Parameter(Mandatory=$true)][string]$UiDirectory)
     $manifest=Join-Path $UiDirectory 'desktop-host.json'
@@ -87,7 +97,7 @@ function Install-AIHWebView2Runtime {
     $lock=$null
     try {
         Write-Host 'Installing the Microsoft Edge WebView2 Evergreen Runtime required by the Windows dashboard...'
-        Invoke-WebRequest -UseBasicParsing -Uri $download -OutFile $bootstrapper
+        Save-AIHDownload -Uri $download -OutFile $bootstrapper
         # Keep the verified executable non-writable until execution completes.
         $lock=[IO.File]::Open($bootstrapper,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
         $signature=Get-AuthenticodeSignature -LiteralPath $bootstrapper
@@ -291,7 +301,7 @@ try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
     if($PSCmdlet.ParameterSetName -eq 'Download'){
         if(-not $Version){
-            $release=Invoke-RestMethod -Uri 'https://api.github.com/repos/aiherd-dev/homebrew-aiherd/releases/latest' -Headers @{'User-Agent'='AIHerd-Windows-Installer'}
+            $release=Invoke-RestMethod -Uri 'https://api.github.com/repos/aiherd-dev/homebrew-aiherd/releases/latest' -Headers @{'User-Agent'='AIHerd-Windows-Installer'} -TimeoutSec 60
             $Version=$release.tag_name
         }
         $Version=$Version -replace '^v',''
@@ -301,8 +311,8 @@ try {
         $ArchivePath=Join-Path $work $name
         $ChecksumPath="$ArchivePath.sha256"
         try {
-            Invoke-WebRequest -UseBasicParsing -Uri "$base/$name" -OutFile $ArchivePath
-            Invoke-WebRequest -UseBasicParsing -Uri "$base/$name.sha256" -OutFile $ChecksumPath
+            Save-AIHDownload -Uri "$base/$name" -OutFile $ArchivePath
+            Save-AIHDownload -Uri "$base/$name.sha256" -OutFile $ChecksumPath
         } catch { throw "Could not download Windows assets for v$Version. Check https://github.com/aiherd-dev/homebrew-aiherd/releases; older releases have no Windows package. $($_.Exception.Message)" }
     }
     $expected=((Get-Content -Raw -LiteralPath $ChecksumPath).Trim() -split '\s+')[0]
