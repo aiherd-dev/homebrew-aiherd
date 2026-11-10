@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>AIHerd — watch every coding agent in one dashboard</title>
+<title>AIHerd — access your laptop AI from your mobile</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="AIHerd watches your terminal panes, spots when a CLI coding agent is waiting on you, and lets you answer it from one dashboard. 100% local.">
+<meta name="description" content="Access your laptop AI from your mobile without changing your workflow. Keep working in VS Code, cmux, or Cursor and send a prompt to your coding agents on the go.">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="img/icon.png">
 <link rel="apple-touch-icon" href="img/icon.png">
@@ -20,8 +20,8 @@
       <span class="text-xl font-semibold">AIHerd</span>
     </a>
     <div class="section-links">
-      <a href="#local-agents">Local agents</a>
-      <a href="#remote-access">Remote access</a>
+      <a href="#local-agents">Your workflow</a>
+      <a href="#remote-access">On the go</a>
       <a href="#beta">Mobile apps</a>
     </div>
   </nav>
@@ -32,16 +32,22 @@
 <!-- Hero -->
 <section class="mx-auto max-w-screen-xl px-4 pt-12 pb-8 text-center lg:px-6 lg:pt-20">
   <h1 class="mx-auto max-w-4xl text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-    Watch every coding agent in one dashboard
+    Access your laptop AI<br class="hidden sm:block"> from your mobile
   </h1>
   <p class="lead mx-auto mt-6 max-w-2xl text-lg sm:text-xl">
-    You have six coding agents running in six panes. Five are working and one is
-    blocked on a yes/no question. AIHerd tells you which — 100% local, and it
-    follows Ghostty, iTerm2, Terminal, tmux, cmux and Orca.
+    Without changing your existing workflow, ask the herd on the go.
   </p>
+  <p class="lead mx-auto mt-3 max-w-2xl text-lg sm:text-xl">
+    Keep working in VS Code, cmux, or Cursor. Send a prompt from your mobile,
+    answer an agent's question, and return to the same session on your laptop.
+  </p>
+  <div class="mx-auto mt-6 flex max-w-2xl flex-col items-center justify-center gap-3 sm:flex-row">
+    <a href="#beta" class="rounded-lg bg-primary-600 px-5 py-2.5 font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-400">Get the mobile app</a>
+    <a href="#install" class="rounded-lg border border-primary-600 px-5 py-2.5 font-medium text-primary-700 hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-primary-400 dark:text-primary-400 dark:hover:bg-primary-500/10">Set up your laptop</a>
+  </div>
 
   <!-- All platforms share one installation entry point. -->
-  <div id="install" class="mx-auto mt-8 max-w-2xl text-left">
+  <div id="install" class="mx-auto mt-8 max-w-2xl scroll-mt-20 text-left">
     <div role="tablist" aria-label="Installation platform" class="mb-3 flex gap-2">
       <button id="mac-tab" type="button" role="tab" aria-controls="mac-install" aria-selected="true" tabindex="0" class="install-tab" data-platform="mac">macOS</button>
       <button id="linux-tab" type="button" role="tab" aria-controls="linux-install" aria-selected="false" tabindex="-1" class="install-tab" data-platform="linux">Linux</button>
@@ -109,8 +115,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\aiherd-instal
   <div class="feature-wrap">
     <div class="section-heading">
       <div>
-        <h2 id="local-heading">Local agents</h2>
-        <p>Live screens, waiting questions, and session history. Your agents together on your Mac.</p>
+        <h2 id="local-heading">Keep your existing workflow</h2>
+        <p><a href="https://herdr.dev/core/" class="text-primary-700 underline dark:text-primary-400">Herdr</a> runs agents in its own runtime. AIHerd connects to the sessions you already use in VS Code, cmux, or Cursor.</p>
       </div>
       <div class="gallery-controls" hidden>
         <span id="gallery-position" aria-live="polite">1 / 3</span>
@@ -140,8 +146,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\aiherd-instal
   <div class="feature-wrap">
     <div class="section-heading">
       <div>
-        <h2 id="remote-heading">Remote access</h2>
-        <p>Your Mac, wherever you are. Connect from mobile, SSH, or VNC.</p>
+        <h2 id="remote-heading">Ask the herd on the go</h2>
+        <p>Reach the AI on your laptop from your phone. Your agents keep working in the same sessions.</p>
       </div>
     </div>
     <figure class="remote-demo">
@@ -153,10 +159,10 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\aiherd-instal
     </figure>
     <div class="remote-details">
       <div class="remote-copy">
-        <h3>The tools you already use</h3>
-        <p>Use standard SSH, SCP, and rsync. AIHerd speaks 100% standard SSH and SFTP, so you can also browse and transfer files with <a href="https://cyberduck.io/">Cyberduck</a>.</p>
-        <h3>Your herd on the go</h3>
-        <p>Open your agents on mobile, keep a terminal session going through network changes, or access your Mac's desktop through VNC. The herd connection menu brings your remote access together.</p>
+        <h3>Send a prompt from your mobile</h3>
+        <p>Read the latest output, give an agent its next prompt, or answer a question while you're away. When you return to your laptop, continue in the same session.</p>
+        <h3>Your laptop, within reach</h3>
+        <p>Keep a terminal session going through network changes, access your Mac's desktop through VNC, or use standard SSH, SCP, and rsync. Browse and transfer files with <a href="https://cyberduck.io/">Cyberduck</a>.</p>
       </div>
       <figure class="herd-connection">
         <img src="img/mac-connection.png" width="808" height="1078" loading="lazy" alt="The native Mac app's herd cloud connection menu with relay status, screen sharing, mobile and website links, and connection traffic">
