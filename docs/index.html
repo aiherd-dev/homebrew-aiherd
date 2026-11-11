@@ -20,8 +20,8 @@
       <span class="text-xl font-semibold">AIHerd</span>
     </a>
     <div class="section-links">
-      <a href="#story">The story</a>
       <a href="#install">Laptop setup</a>
+      <a href="#story">The story</a>
       <a href="#beta">Mobile apps</a>
     </div>
   </nav>
@@ -47,6 +47,76 @@
   </div>
 
 
+</section>
+
+<section class="border-t border-gray-200 dark:border-gray-700" aria-labelledby="laptop-setup-heading">
+  <div class="mx-auto max-w-2xl px-4 py-12 lg:px-6 lg:py-16">
+    <h2 id="laptop-setup-heading" class="text-3xl font-extrabold tracking-tight sm:text-4xl">Set up your laptop</h2>
+    <p class="lead mt-3">Install AIHerd on the computer where your agents run, then pair your phone or another computer.</p>
+  <!-- All platforms share one installation entry point. -->
+  <div id="install" class="mx-auto mt-8 max-w-2xl scroll-mt-20 text-left">
+    <div role="tablist" aria-label="Installation platform" class="mb-3 flex gap-2">
+      <button id="mac-tab" type="button" role="tab" aria-controls="mac-install" aria-selected="true" tabindex="0" class="install-tab" data-platform="mac">macOS</button>
+      <button id="linux-tab" type="button" role="tab" aria-controls="linux-install" aria-selected="false" tabindex="-1" class="install-tab" data-platform="linux">Linux</button>
+      <button id="windows-tab" type="button" role="tab" aria-controls="windows-install" aria-selected="false" tabindex="-1" class="install-tab" data-platform="windows">Windows</button>
+    </div>
+    <div id="mac-install" role="tabpanel" aria-labelledby="mac-tab">
+      <div class="install-command">
+        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="install-cmd">brew install --cask aiherd-dev/aiherd/aiherd</code></pre>
+        <button type="button" data-target="install-cmd" aria-label="Copy the macOS install command" title="Copy" class="copy-command">⧉</button>
+      </div>
+      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">macOS 14 (Sonoma) or newer · Apple Silicon or Intel</p>
+      <p class="mt-3 text-sm">Install <a class="font-medium text-primary-700 underline dark:text-primary-400" href="https://brew.sh/">Homebrew</a> first if needed. Then open AIHerd from Applications; it starts the herd automatically. To update, run <code>brew upgrade --cask aiherd</code>.</p>
+      <p class="mt-3 text-sm">Without Homebrew, download the signed macOS <code>.pkg</code> for Apple Silicon (aarch64) or Intel (x86_64) from <a class="font-medium text-primary-700 underline dark:text-primary-400" href="https://github.com/aiherd-dev/homebrew-aiherd/releases/latest">the latest release</a>.</p>
+    </div>
+    <div id="linux-install" role="tabpanel" aria-labelledby="linux-tab" hidden>
+      <p class="mb-3 lead">Install on a headless Linux machine over SSH. The herd runs in the background with systemd, including after logout and reboot.</p>
+      <p class="mb-2 text-sm font-semibold">1. Install and start the service</p>
+      <div class="install-command">
+        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="linux-install-cmd">curl -fsSL https://aiherd.dev/install.sh | bash</code></pre>
+        <button type="button" data-target="linux-install-cmd" aria-label="Copy the Linux install command" title="Copy" class="copy-command">⧉</button>
+      </div>
+      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">x86_64 / ARM64 · systemd · fully static Linux binaries. Run as your normal user; the installer may ask for sudo to keep the service running after logout. Run the same command to upgrade. Models download when first needed.</p>
+      <p class="mt-5 mb-2 text-sm font-semibold">2. Sign in to expose your herd</p>
+      <div class="install-command">
+        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="linux-login-cmd">export PATH="$HOME/.local/bin:$PATH"
+aih login</code></pre>
+        <button type="button" data-target="linux-login-cmd" aria-label="Copy the Linux login commands" title="Copy" class="copy-command">⧉</button>
+      </div>
+      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Open the printed sign-in URL on your phone or another computer.</p>
+      <p class="mt-5 mb-2 text-sm font-semibold">3. Add your mobile device</p>
+      <div class="install-command">
+        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="linux-join-cmd">aih join</code></pre>
+        <button type="button" data-target="linux-join-cmd" aria-label="Copy the mobile pairing command" title="Copy" class="copy-command">⧉</button>
+      </div>
+      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Scan the QR code or open the link, then approve pairing in the terminal.</p>
+      <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">Check the service: <code>systemctl --user status aih.service</code>.<br>Logs: <code>journalctl --user -u aih.service -f</code>.</p>
+      <p class="mt-3 text-sm"><a class="font-medium text-primary-700 underline dark:text-primary-400" href="install.sh">Read the installer</a> · <a class="font-medium text-primary-700 underline dark:text-primary-400" href="https://github.com/aiherd-dev/homebrew-aiherd/releases/latest">Release downloads</a></p>
+    </div>
+    <div id="windows-install" role="tabpanel" aria-labelledby="windows-tab" hidden>
+      <p class="mb-3 lead">Install the native Windows dashboard and its service for PowerShell terminals, SSH and RDP forwarding. The service starts automatically at boot.</p>
+      <p class="mb-2 text-sm font-semibold">1. Open PowerShell as Administrator and install</p>
+      <div class="install-command">
+        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="windows-install-cmd">Invoke-WebRequest -UseBasicParsing https://aiherd.dev/install.ps1 -OutFile "$env:TEMP\aiherd-install.ps1"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\aiherd-install.ps1"</code></pre>
+        <button type="button" data-target="windows-install-cmd" aria-label="Copy the Windows install commands" title="Copy" class="copy-command">⧉</button>
+      </div>
+      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">x64 Windows 10 1809 / Server 2019 or newer. Verifies the download checksum and installs into Program Files. Run the same commands to upgrade.</p>
+      <p class="mt-5 mb-2 text-sm font-semibold">2. Open AIHerd from the Start menu</p>
+      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Use the Windows account you installed with. The desktop app connects to the installed service by default and does not need to run as Administrator. No separate .NET installation is needed.</p>
+      <p class="mt-5 mb-2 text-sm font-semibold">3. Sign in, then pair your phone</p>
+      <div class="install-command">
+        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="windows-login-cmd">&amp; "$env:ProgramFiles\AIHerd\aih.exe" login
+&amp; "$env:ProgramFiles\AIHerd\aih.exe" join</code></pre>
+        <button type="button" data-target="windows-login-cmd" aria-label="Copy the Windows sign-in and pairing commands" title="Copy" class="copy-command">⧉</button>
+      </div>
+      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Keep PowerShell elevated. Complete browser sign-in, then scan the pairing QR code and approve the request in the terminal.</p>
+      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Check the service with <code>Get-Service AIHerd</code>. The service runs as LocalService; its terminals use that account. RDP must already be enabled on Windows. Model summaries are not available on Windows.</p>
+      <p class="mt-3 text-sm"><a class="font-medium text-primary-700 underline dark:text-primary-400" href="install.ps1">Read the installer</a> · <a class="font-medium text-primary-700 underline dark:text-primary-400" href="https://github.com/aiherd-dev/homebrew-aiherd/releases/latest">Release downloads</a></p>
+    </div>
+  </div>
+
+  </div>
 </section>
 
 <section id="story" class="story-section" aria-labelledby="story-heading">
@@ -147,75 +217,7 @@ python3 -m unittest -v</code></pre>
 </section>
 
 
-<section class="border-t border-gray-200 dark:border-gray-700" aria-labelledby="laptop-setup-heading">
-  <div class="mx-auto max-w-2xl px-4 py-12 lg:px-6 lg:py-16">
-    <h2 id="laptop-setup-heading" class="text-3xl font-extrabold tracking-tight sm:text-4xl">Set up your laptop</h2>
-    <p class="lead mt-3">Install AIHerd on the computer where your agents run, then pair your phone or another computer.</p>
-  <!-- All platforms share one installation entry point. -->
-  <div id="install" class="mx-auto mt-8 max-w-2xl scroll-mt-20 text-left">
-    <div role="tablist" aria-label="Installation platform" class="mb-3 flex gap-2">
-      <button id="mac-tab" type="button" role="tab" aria-controls="mac-install" aria-selected="true" tabindex="0" class="install-tab" data-platform="mac">macOS</button>
-      <button id="linux-tab" type="button" role="tab" aria-controls="linux-install" aria-selected="false" tabindex="-1" class="install-tab" data-platform="linux">Linux</button>
-      <button id="windows-tab" type="button" role="tab" aria-controls="windows-install" aria-selected="false" tabindex="-1" class="install-tab" data-platform="windows">Windows</button>
-    </div>
-    <div id="mac-install" role="tabpanel" aria-labelledby="mac-tab">
-      <div class="install-command">
-        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="install-cmd">brew install --cask aiherd-dev/aiherd/aiherd</code></pre>
-        <button type="button" data-target="install-cmd" aria-label="Copy the macOS install command" title="Copy" class="copy-command">⧉</button>
-      </div>
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">macOS 14 (Sonoma) or newer · Apple Silicon or Intel</p>
-      <p class="mt-3 text-sm">Install <a class="font-medium text-primary-700 underline dark:text-primary-400" href="https://brew.sh/">Homebrew</a> first if needed. Then open AIHerd from Applications; it starts the herd automatically. To update, run <code>brew upgrade --cask aiherd</code>.</p>
-      <p class="mt-3 text-sm">Without Homebrew, download the signed macOS <code>.pkg</code> for Apple Silicon (aarch64) or Intel (x86_64) from <a class="font-medium text-primary-700 underline dark:text-primary-400" href="https://github.com/aiherd-dev/homebrew-aiherd/releases/latest">the latest release</a>.</p>
-    </div>
-    <div id="linux-install" role="tabpanel" aria-labelledby="linux-tab" hidden>
-      <p class="mb-3 lead">Install on a headless Linux machine over SSH. The herd runs in the background with systemd, including after logout and reboot.</p>
-      <p class="mb-2 text-sm font-semibold">1. Install and start the service</p>
-      <div class="install-command">
-        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="linux-install-cmd">curl -fsSL https://aiherd.dev/install.sh | bash</code></pre>
-        <button type="button" data-target="linux-install-cmd" aria-label="Copy the Linux install command" title="Copy" class="copy-command">⧉</button>
-      </div>
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">x86_64 / ARM64 · systemd · fully static Linux binaries. Run as your normal user; the installer may ask for sudo to keep the service running after logout. Run the same command to upgrade. Models download when first needed.</p>
-      <p class="mt-5 mb-2 text-sm font-semibold">2. Sign in to expose your herd</p>
-      <div class="install-command">
-        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="linux-login-cmd">export PATH="$HOME/.local/bin:$PATH"
-aih login</code></pre>
-        <button type="button" data-target="linux-login-cmd" aria-label="Copy the Linux login commands" title="Copy" class="copy-command">⧉</button>
-      </div>
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Open the printed sign-in URL on your phone or another computer.</p>
-      <p class="mt-5 mb-2 text-sm font-semibold">3. Add your mobile device</p>
-      <div class="install-command">
-        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="linux-join-cmd">aih join</code></pre>
-        <button type="button" data-target="linux-join-cmd" aria-label="Copy the mobile pairing command" title="Copy" class="copy-command">⧉</button>
-      </div>
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Scan the QR code or open the link, then approve pairing in the terminal.</p>
-      <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">Check the service: <code>systemctl --user status aih.service</code>.<br>Logs: <code>journalctl --user -u aih.service -f</code>.</p>
-      <p class="mt-3 text-sm"><a class="font-medium text-primary-700 underline dark:text-primary-400" href="install.sh">Read the installer</a> · <a class="font-medium text-primary-700 underline dark:text-primary-400" href="https://github.com/aiherd-dev/homebrew-aiherd/releases/latest">Release downloads</a></p>
-    </div>
-    <div id="windows-install" role="tabpanel" aria-labelledby="windows-tab" hidden>
-      <p class="mb-3 lead">Install the native Windows dashboard and its service for PowerShell terminals, SSH and RDP forwarding. The service starts automatically at boot.</p>
-      <p class="mb-2 text-sm font-semibold">1. Open PowerShell as Administrator and install</p>
-      <div class="install-command">
-        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="windows-install-cmd">Invoke-WebRequest -UseBasicParsing https://aiherd.dev/install.ps1 -OutFile "$env:TEMP\aiherd-install.ps1"
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\aiherd-install.ps1"</code></pre>
-        <button type="button" data-target="windows-install-cmd" aria-label="Copy the Windows install commands" title="Copy" class="copy-command">⧉</button>
-      </div>
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">x64 Windows 10 1809 / Server 2019 or newer. Verifies the download checksum and installs into Program Files. Run the same commands to upgrade.</p>
-      <p class="mt-5 mb-2 text-sm font-semibold">2. Open AIHerd from the Start menu</p>
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Use the Windows account you installed with. The desktop app connects to the installed service by default and does not need to run as Administrator. No separate .NET installation is needed.</p>
-      <p class="mt-5 mb-2 text-sm font-semibold">3. Sign in, then pair your phone</p>
-      <div class="install-command">
-        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="windows-login-cmd">&amp; "$env:ProgramFiles\AIHerd\aih.exe" login
-&amp; "$env:ProgramFiles\AIHerd\aih.exe" join</code></pre>
-        <button type="button" data-target="windows-login-cmd" aria-label="Copy the Windows sign-in and pairing commands" title="Copy" class="copy-command">⧉</button>
-      </div>
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Keep PowerShell elevated. Complete browser sign-in, then scan the pairing QR code and approve the request in the terminal.</p>
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Check the service with <code>Get-Service AIHerd</code>. The service runs as LocalService; its terminals use that account. RDP must already be enabled on Windows. Model summaries are not available on Windows.</p>
-      <p class="mt-3 text-sm"><a class="font-medium text-primary-700 underline dark:text-primary-400" href="install.ps1">Read the installer</a> · <a class="font-medium text-primary-700 underline dark:text-primary-400" href="https://github.com/aiherd-dev/homebrew-aiherd/releases/latest">Release downloads</a></p>
-    </div>
-  </div>
 
-  </div>
-</section>
 
 <!-- Mobile apps -->
 <section id="beta" class="scroll-mt-20 border-t border-gray-200 dark:border-gray-700">
