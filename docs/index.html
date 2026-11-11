@@ -29,93 +29,87 @@
 
 <main id="top">
 
-<!-- Hero -->
-<section class="mx-auto max-w-screen-xl px-4 pt-12 pb-8 text-center lg:px-6 lg:pt-20">
-  <h1 class="mx-auto max-w-4xl text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-    Access your laptop AI<br class="hidden sm:block"> from your mobile
-  </h1>
-  <p class="lead mx-auto mt-6 max-w-2xl text-lg sm:text-xl">
-    Without changing your existing workflow, ask the herd on the go.
-  </p>
-  <p class="lead mx-auto mt-3 max-w-2xl text-lg sm:text-xl">
-    Start Claude in cmux and a second session in Cursor. Check in from your phone,
-    test the results over SSH, and try the app on a remote desktop.
-  </p>
-  <div class="mx-auto mt-6 flex max-w-2xl flex-col items-center justify-center gap-3 sm:flex-row">
-    <a href="#beta" class="rounded-lg bg-primary-600 px-5 py-2.5 font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-400">Get the mobile app</a>
-    <a href="#install" class="rounded-lg border border-primary-600 px-5 py-2.5 font-medium text-primary-700 hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-primary-400 dark:text-primary-400 dark:hover:bg-primary-500/10">Set up your laptop</a>
+<section class="hero">
+  <h1>Access your laptop AI<br class="hidden sm:block"> from your mobile</h1>
+  <p>Without changing your existing workflow, ask the herd on the go. Keep working in cmux, Cursor, or VS Code, and send the next prompt from your phone.</p>
+  <div class="hero-actions">
+    <a href="#install" class="primary-action">Install on your laptop</a>
+    <a href="#beta" class="secondary-action">Get the mobile app</a>
   </div>
-
-
 </section>
 
-<section class="border-t border-gray-200 dark:border-gray-700" aria-labelledby="laptop-setup-heading">
-  <div class="mx-auto max-w-2xl px-4 py-12 lg:px-6 lg:py-16">
-    <h2 id="laptop-setup-heading" class="text-3xl font-extrabold tracking-tight sm:text-4xl">Set up your laptop</h2>
-    <p class="lead mt-3">Install AIHerd on the computer where your agents run, then pair your phone or another computer.</p>
-  <!-- All platforms share one installation entry point. -->
-  <div id="install" class="mx-auto mt-8 max-w-2xl scroll-mt-20 text-left">
-    <div role="tablist" aria-label="Installation platform" class="mb-3 flex gap-2">
-      <button id="mac-tab" type="button" role="tab" aria-controls="mac-install" aria-selected="true" tabindex="0" class="install-tab" data-platform="mac">macOS</button>
-      <button id="linux-tab" type="button" role="tab" aria-controls="linux-install" aria-selected="false" tabindex="-1" class="install-tab" data-platform="linux">Linux</button>
-      <button id="windows-tab" type="button" role="tab" aria-controls="windows-install" aria-selected="false" tabindex="-1" class="install-tab" data-platform="windows">Windows</button>
+<section id="install" class="quick-install" aria-labelledby="laptop-setup-heading">
+  <div class="compact-wrap">
+    <div class="install-heading">
+      <h2 id="laptop-setup-heading">Install on your laptop</h2>
+      <div role="tablist" aria-label="Installation platform" class="install-tabs">
+        <button id="mac-tab" type="button" role="tab" aria-controls="mac-install" aria-selected="true" tabindex="0" class="install-tab" data-platform="mac">macOS</button>
+        <button id="linux-tab" type="button" role="tab" aria-controls="linux-install" aria-selected="false" tabindex="-1" class="install-tab" data-platform="linux">Linux</button>
+        <button id="windows-tab" type="button" role="tab" aria-controls="windows-install" aria-selected="false" tabindex="-1" class="install-tab" data-platform="windows">Windows</button>
+      </div>
     </div>
     <div id="mac-install" role="tabpanel" aria-labelledby="mac-tab">
       <div class="install-command">
-        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="install-cmd">brew install --cask aiherd-dev/aiherd/aiherd</code></pre>
+        <pre><code id="install-cmd">brew install --cask aiherd-dev/aiherd/aiherd</code></pre>
         <button type="button" data-target="install-cmd" aria-label="Copy the macOS install command" title="Copy" class="copy-command">⧉</button>
       </div>
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">macOS 14 (Sonoma) or newer · Apple Silicon or Intel</p>
-      <p class="mt-3 text-sm">Install <a class="font-medium text-primary-700 underline dark:text-primary-400" href="https://brew.sh/">Homebrew</a> first if needed. Then open AIHerd from Applications; it starts the herd automatically. To update, run <code>brew upgrade --cask aiherd</code>.</p>
-      <p class="mt-3 text-sm">Without Homebrew, download the signed macOS <code>.pkg</code> for Apple Silicon (aarch64) or Intel (x86_64) from <a class="font-medium text-primary-700 underline dark:text-primary-400" href="https://github.com/aiherd-dev/homebrew-aiherd/releases/latest">the latest release</a>.</p>
+      <p class="install-requirements">Homebrew · macOS 14+ · Apple Silicon or Intel</p>
+      <details class="install-details">
+        <summary>Setup, pairing &amp; updates</summary>
+        <div class="install-detail-copy">
+          <p>Install <a href="https://brew.sh/">Homebrew</a> first if needed. Open AIHerd from Applications; it starts the herd automatically. Pair your phone using the app's herd connection menu.</p>
+          <p>Update with <code>brew upgrade --cask aiherd</code>.</p>
+          <p>Without Homebrew, download the signed macOS <code>.pkg</code> for Apple Silicon (aarch64) or Intel (x86_64) from <a href="https://github.com/aiherd-dev/homebrew-aiherd/releases/latest">the latest release</a>.</p>
+        </div>
+      </details>
     </div>
     <div id="linux-install" role="tabpanel" aria-labelledby="linux-tab" hidden>
-      <p class="mb-3 lead">Install on a headless Linux machine over SSH. The herd runs in the background with systemd, including after logout and reboot.</p>
-      <p class="mb-2 text-sm font-semibold">1. Install and start the service</p>
       <div class="install-command">
-        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="linux-install-cmd">curl -fsSL https://aiherd.dev/install.sh | bash</code></pre>
+        <pre><code id="linux-install-cmd">curl -fsSL https://aiherd.dev/install.sh | bash</code></pre>
         <button type="button" data-target="linux-install-cmd" aria-label="Copy the Linux install command" title="Copy" class="copy-command">⧉</button>
       </div>
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">x86_64 / ARM64 · systemd · fully static Linux binaries. Run as your normal user; the installer may ask for sudo to keep the service running after logout. Run the same command to upgrade. Models download when first needed.</p>
-      <p class="mt-5 mb-2 text-sm font-semibold">2. Sign in to expose your herd</p>
-      <div class="install-command">
-        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="linux-login-cmd">export PATH="$HOME/.local/bin:$PATH"
+      <p class="install-requirements">Run as your normal user · systemd · x86_64 / ARM64</p>
+      <details class="install-details">
+        <summary>Setup, pairing &amp; updates</summary>
+        <div class="install-detail-copy">
+          <p>The herd runs in the background with systemd, including after logout and reboot. The installer may ask for sudo to keep the service running after logout. Models download when first needed.</p>
+          <p>Sign in to expose your herd. Open the printed sign-in URL on your phone or another computer.</p>
+          <div class="install-command">
+            <pre><code id="linux-login-cmd">export PATH="$HOME/.local/bin:$PATH"
 aih login</code></pre>
-        <button type="button" data-target="linux-login-cmd" aria-label="Copy the Linux login commands" title="Copy" class="copy-command">⧉</button>
-      </div>
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Open the printed sign-in URL on your phone or another computer.</p>
-      <p class="mt-5 mb-2 text-sm font-semibold">3. Add your mobile device</p>
-      <div class="install-command">
-        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="linux-join-cmd">aih join</code></pre>
-        <button type="button" data-target="linux-join-cmd" aria-label="Copy the mobile pairing command" title="Copy" class="copy-command">⧉</button>
-      </div>
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Scan the QR code or open the link, then approve pairing in the terminal.</p>
-      <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">Check the service: <code>systemctl --user status aih.service</code>.<br>Logs: <code>journalctl --user -u aih.service -f</code>.</p>
-      <p class="mt-3 text-sm"><a class="font-medium text-primary-700 underline dark:text-primary-400" href="install.sh">Read the installer</a> · <a class="font-medium text-primary-700 underline dark:text-primary-400" href="https://github.com/aiherd-dev/homebrew-aiherd/releases/latest">Release downloads</a></p>
+            <button type="button" data-target="linux-login-cmd" aria-label="Copy the Linux login commands" title="Copy" class="copy-command">⧉</button>
+          </div>
+          <p>Add your mobile device, then scan the QR code or open the link and approve pairing in the terminal.</p>
+          <div class="install-command">
+            <pre><code id="linux-join-cmd">aih join</code></pre>
+            <button type="button" data-target="linux-join-cmd" aria-label="Copy the mobile pairing command" title="Copy" class="copy-command">⧉</button>
+          </div>
+          <p>Run the install command again to upgrade. Check the service with <code>systemctl --user status aih.service</code>; read logs with <code>journalctl --user -u aih.service -f</code>.</p>
+          <p><a href="install.sh">Read the installer</a> · <a href="https://github.com/aiherd-dev/homebrew-aiherd/releases/latest">Release downloads</a></p>
+        </div>
+      </details>
     </div>
     <div id="windows-install" role="tabpanel" aria-labelledby="windows-tab" hidden>
-      <p class="mb-3 lead">Install the native Windows dashboard and its service for PowerShell terminals, SSH and RDP forwarding. The service starts automatically at boot.</p>
-      <p class="mb-2 text-sm font-semibold">1. Open PowerShell as Administrator and install</p>
       <div class="install-command">
-        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="windows-install-cmd">Invoke-WebRequest -UseBasicParsing https://aiherd.dev/install.ps1 -OutFile "$env:TEMP\aiherd-install.ps1"
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\aiherd-install.ps1"</code></pre>
-        <button type="button" data-target="windows-install-cmd" aria-label="Copy the Windows install commands" title="Copy" class="copy-command">⧉</button>
+        <pre><code id="windows-install-cmd">irm https://aiherd.dev/install.ps1 | iex</code></pre>
+        <button type="button" data-target="windows-install-cmd" aria-label="Copy the Windows install command" title="Copy" class="copy-command">⧉</button>
       </div>
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">x64 Windows 10 1809 / Server 2019 or newer. Verifies the download checksum and installs into Program Files. Run the same commands to upgrade.</p>
-      <p class="mt-5 mb-2 text-sm font-semibold">2. Open AIHerd from the Start menu</p>
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Use the Windows account you installed with. The desktop app connects to the installed service by default and does not need to run as Administrator. No separate .NET installation is needed.</p>
-      <p class="mt-5 mb-2 text-sm font-semibold">3. Sign in, then pair your phone</p>
-      <div class="install-command">
-        <pre class="flex-1 overflow-x-auto px-2 py-1 font-mono text-sm sm:text-base"><code id="windows-login-cmd">&amp; "$env:ProgramFiles\AIHerd\aih.exe" login
-&amp; "$env:ProgramFiles\AIHerd\aih.exe" join</code></pre>
-        <button type="button" data-target="windows-login-cmd" aria-label="Copy the Windows sign-in and pairing commands" title="Copy" class="copy-command">⧉</button>
-      </div>
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Keep PowerShell elevated. Complete browser sign-in, then scan the pairing QR code and approve the request in the terminal.</p>
-      <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">Check the service with <code>Get-Service AIHerd</code>. The service runs as LocalService; its terminals use that account. RDP must already be enabled on Windows. Model summaries are not available on Windows.</p>
-      <p class="mt-3 text-sm"><a class="font-medium text-primary-700 underline dark:text-primary-400" href="install.ps1">Read the installer</a> · <a class="font-medium text-primary-700 underline dark:text-primary-400" href="https://github.com/aiherd-dev/homebrew-aiherd/releases/latest">Release downloads</a></p>
+      <p class="install-requirements">PowerShell as Administrator · x64 Windows 10 1809+ / Server 2019+</p>
+      <details class="install-details">
+        <summary>Setup, pairing &amp; updates</summary>
+        <div class="install-detail-copy">
+          <p>The installer verifies the download checksum, installs into Program Files, and starts the service at boot. Run the install command again to upgrade.</p>
+          <p>Keep PowerShell elevated to sign in and pair your phone. Complete browser sign-in, then scan the QR code and approve pairing in the terminal.</p>
+          <div class="install-command">
+            <pre><code id="windows-login-cmd">aih login
+aih join</code></pre>
+            <button type="button" data-target="windows-login-cmd" aria-label="Copy the Windows sign-in and pairing commands" title="Copy" class="copy-command">⧉</button>
+          </div>
+          <p>Open AIHerd from the Start menu using the account you installed with; no Administrator needed. Check the service with <code>Get-Service AIHerd</code>. Its terminals run as LocalService. RDP must already be enabled. Model summaries are not available on Windows.</p>
+          <p><a href="install.ps1">Read the installer</a> · <a href="https://github.com/aiherd-dev/homebrew-aiherd/releases/latest">Release downloads</a></p>
+        </div>
+      </details>
     </div>
-  </div>
-
   </div>
 </section>
 
@@ -168,16 +162,27 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\aiherd-instal
     <article class="story-step" aria-labelledby="ssh-heading">
       <div class="story-copy">
         <p class="story-eyebrow">03 / At another laptop</p>
-        <h3 id="ssh-heading">Run the tests yourself.</h3>
-        <p>Cursor says the tests pass. From another laptop, open a shell on your development machine with <code>aih ssh</code>. Go to the project and run the suite yourself, against the files your agents just changed.</p>
+        <h3 id="ssh-heading">Your shell survives a change of IP.</h3>
+        <p>Open a shell on your development machine and run the tests against the files your agents changed.</p>
         <pre class="story-command"><code>aih ssh demo-laptop
 cd ~/trailboard
 python3 -m unittest -v</code></pre>
+        <p>Switch Wi-Fi or move to a hotspot: your shell keeps running on the herd. <code>aih ssh</code> retries and resumes the same session when connectivity returns, even if your client IP changed.</p>
+        <p>The red banner shows the interruption and retry status. It clears when the connection recovers, and you carry on in the same shell.</p>
+        <details class="story-extra"><summary>How recovery works</summary><p>The remote herd must keep running. The CLI reconnects to it and resumes the existing SSH session, without requiring a fixed client IP.</p></details>
       </div>
+      <div class="ssh-media">
+        <figure class="story-media">
+          <a href="img/story/ssh-reconnecting.png" target="_blank" rel="noopener" aria-label="Open the full SSH reconnecting banner screenshot"><img src="img/story/ssh-reconnecting.png" width="2200" height="960" alt="Actual red aih ssh connection is stalled banner during an injected network outage, showing elapsed time and automatic retry status" loading="lazy"></a>
+          <figcaption>Real SSH banner during a controlled outage on a scratch herd. The same shell resumed afterward.</figcaption>
+        </figure>
+        <details class="story-extra"><summary>See the five passing tests</summary>
       <figure class="story-media">
         <a href="img/story/ssh-tests.png" target="_blank" rel="noopener" aria-label="Open the full SSH test screenshot"><img src="img/story/ssh-tests.png" width="1440" height="900" alt="A separate Linux client connects to demo-laptop with aih ssh and runs all five Trailboard unit tests successfully" loading="lazy"></a>
         <figcaption>Actual test output over AIHerd SSH from a separate Linux client.</figcaption>
       </figure>
+        </details>
+      </div>
     </article>
 
     <article class="story-step" aria-labelledby="rdp-heading">
@@ -212,54 +217,33 @@ python3 -m unittest -v</code></pre>
       <p>Back at your desk, continue in the same cmux and Cursor sessions.</p>
       <a href="#install">Set up your laptop <span aria-hidden="true">→</span></a>
     </div>
-    <p class="story-provenance">Real captures from isolated demo herds: cmux, Cursor, the native iPhone app in iOS Simulator, and a Linux VM. Open any screenshot to see it at full size.</p>
+    <p class="story-provenance">Real screenshots from isolated demo herds, including the native iPhone app in iOS Simulator and a Linux VM. Click any screenshot to enlarge.</p>
   </div>
 </section>
 
 
 
 
-<!-- Mobile apps -->
-<section id="beta" class="scroll-mt-20 border-t border-gray-200 dark:border-gray-700">
-  <div class="mx-auto max-w-2xl px-4 py-12 lg:px-6 lg:py-16">
-    <div>
-      <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Set up your phone</h2>
-      <p class="lead mt-3">A pane that stops to ask something notifies the phone even with the app
-      closed — the pane, the question, and the sentences the summarizer wrote about it — and a tap
-      lands in that pane. Answer it there and the Mac's badge clears too.</p>
-
-      <p class="lead mt-3">Install AIHerd on your computer using the instructions above, then get the app for your phone.</p>
-
-      <div class="mt-6 space-y-6">
-        <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-          <h3 class="text-xl font-semibold">iPhone and iPad</h3>
-          <p class="lead mt-3">Get AIHerd from the App Store.</p>
-          <a href="https://apps.apple.com/app/aiherd/id6802066737"
-             class="mt-3 inline-block rounded-lg bg-primary-600 px-5 py-2.5 font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-400">View on the App Store</a>
-        </div>
-        <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-          <h3 class="text-xl font-semibold">Android beta</h3>
-          <ol class="lead mt-3 list-decimal space-y-3 pl-5">
-            <li><a href="https://groups.google.com/g/aiherd-android-testers/about" class="font-medium text-primary-700 underline dark:text-primary-400">Join the AIHerd Android Testers group</a>.</li>
-            <li><a href="https://play.google.com/apps/testing/dev.aiherd.app" class="font-medium text-primary-700 underline dark:text-primary-400">Join the test and install from Google Play</a> using the same Google account.</li>
-          </ol>
-        </div>
+<section id="beta" class="mobile-setup" aria-labelledby="phone-setup-heading">
+  <div class="compact-wrap">
+    <h2 id="phone-setup-heading">Get the mobile app</h2>
+    <p class="mobile-intro">Install AIHerd on your computer, then scan its pairing QR code and approve the connection.</p>
+    <div class="download-cards">
+      <div class="download-card">
+        <h3>iPhone and iPad</h3>
+        <a href="https://apps.apple.com/app/aiherd/id6802066737" class="primary-action">View on the App Store</a>
       </div>
-
-      <p class="lead mt-6">Open the app, scan your computer's AIHerd pairing QR code, and approve the connection on your computer.</p>
-
-      <h3 class="mt-8 text-xl font-semibold">Join the mobile beta</h3>
-      <p class="lead mt-3">For beta access and emailed installation instructions, choose your phone type and leave your details.</p>
-
+      <div class="download-card">
+        <h3>Android beta</h3>
+        <ol><li><a href="https://groups.google.com/g/aiherd-android-testers/about">Join the Android Testers group</a>.</li><li><a href="https://play.google.com/apps/testing/dev.aiherd.app">Join the test and install from Google Play</a> with the same Google account.</li></ol>
+      </div>
+    </div>
       <p id="beta-thanks" hidden
          class="mt-6 rounded-lg border border-primary-600 bg-primary-50 px-4 py-3 text-primary-900 dark:border-primary-500/60 dark:bg-primary-500/10 dark:text-primary-200">
         You're on the list — check your inbox for installation instructions. If you don't see them, check your spam folder.
       </p>
-
-      <!-- A plain POST to our own box (subscribe.aiherd.dev, an ssh-managed
-           cloudflared tunnel), so the form keeps the page's styling and this
-           stays a static page. The 303 comes back to ?subscribed=1, which is
-           what reveals the message above. -->
+    <details class="signup-details">
+      <summary>Beta access &amp; emailed setup instructions</summary>
       <form id="beta-form" action="https://subscribe.aiherd.dev/" method="POST" class="mt-6 space-y-3">
         <input type="checkbox" name="_honeypot" style="display:none" tabindex="-1" autocomplete="off">
         <div>
@@ -287,7 +271,7 @@ python3 -m unittest -v</code></pre>
         </button>
         <p class="text-sm text-gray-500 dark:text-gray-400">Used only for beta access and installation instructions.</p>
       </form>
-    </div>
+    </details>
   </div>
 </section>
 
