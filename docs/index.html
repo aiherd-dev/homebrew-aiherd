@@ -21,7 +21,7 @@
     </a>
     <div class="section-links">
       <a href="#install">Laptop setup</a>
-      <a href="#story">The story</a>
+      <a href="#story">Typical Use Case</a>
       <a href="#beta">Mobile apps</a>
     </div>
   </nav>
@@ -163,7 +163,7 @@ aih join</code></pre>
       <div class="story-copy">
         <p class="story-eyebrow">03 / At another laptop</p>
         <h3 id="ssh-heading">Your shell survives a change of IP.</h3>
-        <p>Open a shell on your development machine and run the tests against the files your agents changed.</p>
+        <p>Open a shell on your development machine and run the tests against the files your agents changed. All standard tools that use SSH work too, including <code>scp</code>, <code>rsync</code>, and even <code>git</code>.</p>
         <pre class="story-command"><code>aih ssh demo-laptop
 cd ~/trailboard
 python3 -m unittest -v</code></pre>
