@@ -20,8 +20,8 @@
       <span class="text-xl font-semibold">AIHerd</span>
     </a>
     <div class="section-links">
-      <a href="#local-agents">Your workflow</a>
-      <a href="#remote-access">On the go</a>
+      <a href="#story">The story</a>
+      <a href="#install">Laptop setup</a>
       <a href="#beta">Mobile apps</a>
     </div>
   </nav>
@@ -38,14 +38,119 @@
     Without changing your existing workflow, ask the herd on the go.
   </p>
   <p class="lead mx-auto mt-3 max-w-2xl text-lg sm:text-xl">
-    Keep working in VS Code, cmux, or Cursor. Send a prompt from your mobile,
-    answer an agent's question, and return to the same session on your laptop.
+    Start Claude in cmux and a second session in Cursor. Check in from your phone,
+    test the results over SSH, and try the app on a remote desktop.
   </p>
   <div class="mx-auto mt-6 flex max-w-2xl flex-col items-center justify-center gap-3 sm:flex-row">
     <a href="#beta" class="rounded-lg bg-primary-600 px-5 py-2.5 font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-400">Get the mobile app</a>
     <a href="#install" class="rounded-lg border border-primary-600 px-5 py-2.5 font-medium text-primary-700 hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-primary-400 dark:text-primary-400 dark:hover:bg-primary-500/10">Set up your laptop</a>
   </div>
 
+
+</section>
+
+<section id="story" class="story-section" aria-labelledby="story-heading">
+  <div class="story-wrap">
+    <header class="story-intro">
+      <p class="story-eyebrow">One project. The same sessions.</p>
+      <h2 id="story-heading">Build at your desk.<br>Keep going anywhere.</h2>
+      <p>You're building Trailboard, a small launch checklist. Claude handles the app in cmux. A second session in Cursor writes the tests. Here's how the work follows you through the day.</p>
+    </header>
+
+    <article id="local-agents" class="story-step" aria-labelledby="desk-heading">
+      <div class="story-copy">
+        <p class="story-eyebrow">01 / At your desk</p>
+        <h3 id="desk-heading">Start where you already work.</h3>
+        <p>Open Claude Code in cmux and start a Cursor session alongside it. Ask Claude to build the checklist and Cursor to cover the task counts with tests. AIHerd follows both sessions in the tools you already use.</p>
+      </div>
+      <div class="story-pair">
+        <figure class="story-media">
+          <a href="img/story/cmux-claude.png" target="_blank" rel="noopener" aria-label="Open the full cmux screenshot"><img src="img/story/cmux-claude.png" width="2360" height="1520" alt="Claude Code in a dedicated cmux workspace explains the Trailboard app it built and asks what to add next" loading="lazy"></a>
+          <figcaption>Claude builds Trailboard in cmux.</figcaption>
+        </figure>
+        <figure class="story-media">
+          <a href="img/story/cursor-tests.png" target="_blank" rel="noopener" aria-label="Open the full Cursor screenshot"><img src="img/story/cursor-tests.png" width="2560" height="1600" alt="The actual Cursor conversation shows test_tasks.py added and all five Trailboard tests passing" loading="lazy"></a>
+          <figcaption>Cursor adds five tests. All five pass.</figcaption>
+        </figure>
+      </div>
+    </article>
+
+    <article id="remote-access" class="story-step story-mobile" aria-labelledby="phone-heading">
+      <div class="story-copy">
+        <p class="story-eyebrow">02 / Away from your desk</p>
+        <h3 id="phone-heading">Check in from your phone.</h3>
+        <p>You step out. Open the AIHerd mobile app and see the same Claude and Cursor sessions. Claude has finished the first version and asks what to do next.</p>
+        <p>Send a follow-up: “Add localStorage persistence so the checklist survives a reload.” The prompt goes back to Claude in the original cmux session.</p>
+        <p class="story-outcome">Your laptop keeps doing the work. Your phone keeps it moving.</p>
+      </div>
+      <div class="story-phones">
+        <figure class="story-media story-phone">
+          <a href="img/story/mobile-sessions.png" target="_blank" rel="noopener" aria-label="Open the full mobile session list"><img src="img/story/mobile-sessions.png" width="1206" height="2622" alt="The native AIHerd iPhone app lists the original cmux Claude session and Cursor agent session from the isolated demo herd" loading="lazy"></a>
+          <figcaption>Both sessions in the native mobile app.</figcaption>
+        </figure>
+        <figure class="story-media story-phone">
+          <a href="img/story/mobile-followup.png" target="_blank" rel="noopener" aria-label="Open the full mobile follow-up screenshot"><img src="img/story/mobile-followup.png" width="1206" height="2622" alt="The native AIHerd iPhone app displays Claude's Trailboard session and the follow-up asking for saving across reloads" loading="lazy"></a>
+          <figcaption>A follow-up for the same Claude session.</figcaption>
+        </figure>
+      </div>
+    </article>
+
+    <article class="story-step" aria-labelledby="ssh-heading">
+      <div class="story-copy">
+        <p class="story-eyebrow">03 / At another laptop</p>
+        <h3 id="ssh-heading">Run the tests yourself.</h3>
+        <p>Cursor says the tests pass. From another laptop, open a shell on your development machine with <code>aih ssh</code>. Go to the project and run the suite yourself, against the files your agents just changed.</p>
+        <pre class="story-command"><code>aih ssh demo-laptop
+cd ~/trailboard
+python3 -m unittest -v</code></pre>
+      </div>
+      <figure class="story-media">
+        <a href="img/story/ssh-tests.png" target="_blank" rel="noopener" aria-label="Open the full SSH test screenshot"><img src="img/story/ssh-tests.png" width="1440" height="900" alt="A separate Linux client connects to demo-laptop with aih ssh and runs all five Trailboard unit tests successfully" loading="lazy"></a>
+        <figcaption>Actual test output over AIHerd SSH from a separate Linux client.</figcaption>
+      </figure>
+    </article>
+
+    <article class="story-step" aria-labelledby="rdp-heading">
+      <div class="story-copy">
+        <p class="story-eyebrow">04 / Time to try the app</p>
+        <h3 id="rdp-heading">Open the desktop. See what they built.</h3>
+        <p>Trailboard is also running on your Linux test VM. Connect with <code>aih rdp</code> and try the app in its browser: move a task, add another, and check how the result feels.</p>
+        <pre class="story-command"><code>aih rdp demo-linux</code></pre>
+        <p class="story-note">RDP opens a Linux or Windows herd's desktop. For your Mac's desktop, use <code>aih vnc demo-laptop</code>.</p>
+      </div>
+      <figure class="story-media">
+        <a href="img/story/rdp-app.png" target="_blank" rel="noopener" aria-label="Open the full RDP desktop screenshot"><img src="img/story/rdp-app.png" width="1440" height="900" alt="A real Linux scratch VM desktop viewed through aih rdp, with the agent-built Trailboard checklist running in its browser" loading="lazy"></a>
+        <figcaption>The real app on an isolated Linux desktop, viewed through AIHerd RDP.</figcaption>
+      </figure>
+    </article>
+
+    <article class="story-step" aria-labelledby="pane-heading">
+      <div class="story-copy">
+        <p class="story-eyebrow">05 / In a Linux VM</p>
+        <h3 id="pane-heading">Your sessions, from a terminal.</h3>
+        <p>Later, you're working in a Linux VM. Use the pane picker to find your laptop's Claude or Cursor session, open it, read its output, and send the next prompt.</p>
+        <pre class="story-command"><code>aih remote demo-laptop pane</code></pre>
+        <p class="story-note"><code>aih pane</code> opens the local herd. <code>aih remote demo-laptop pane</code> reaches the saved laptop connection.</p>
+      </div>
+      <figure class="story-media">
+        <a href="img/story/linux-pane.png" target="_blank" rel="noopener" aria-label="Open the full Linux pane screenshot"><img src="img/story/linux-pane.png" width="1440" height="900" alt="The original Cursor agent conversation is opened in a Linux VM terminal using aih remote demo-laptop pane, with live output and a command input line" loading="lazy"></a>
+        <figcaption>The original Cursor session, opened from the Linux VM's terminal.</figcaption>
+      </figure>
+    </article>
+
+    <div class="story-ending">
+      <p>Back at your desk, continue in the same cmux and Cursor sessions.</p>
+      <a href="#install">Set up your laptop <span aria-hidden="true">→</span></a>
+    </div>
+    <p class="story-provenance">Real captures from isolated demo herds: cmux, Cursor, the native iPhone app in iOS Simulator, and a Linux VM. Open any screenshot to see it at full size.</p>
+  </div>
+</section>
+
+
+<section class="border-t border-gray-200 dark:border-gray-700" aria-labelledby="laptop-setup-heading">
+  <div class="mx-auto max-w-2xl px-4 py-12 lg:px-6 lg:py-16">
+    <h2 id="laptop-setup-heading" class="text-3xl font-extrabold tracking-tight sm:text-4xl">Set up your laptop</h2>
+    <p class="lead mt-3">Install AIHerd on the computer where your agents run, then pair your phone or another computer.</p>
   <!-- All platforms share one installation entry point. -->
   <div id="install" class="mx-auto mt-8 max-w-2xl scroll-mt-20 text-left">
     <div role="tablist" aria-label="Installation platform" class="mb-3 flex gap-2">
@@ -109,66 +214,6 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\aiherd-instal
     </div>
   </div>
 
-</section>
-
-<section id="local-agents" class="feature-section" aria-labelledby="local-heading">
-  <div class="feature-wrap">
-    <div class="section-heading">
-      <div>
-        <h2 id="local-heading">Keep your existing workflow</h2>
-        <p><a href="https://herdr.dev/core/" class="text-primary-700 underline dark:text-primary-400">Herdr</a> runs agents in its own runtime. AIHerd connects to the sessions you already use in VS Code, cmux, or Cursor.</p>
-      </div>
-      <div class="gallery-controls" hidden>
-        <span id="gallery-position" aria-live="polite">1 / 3</span>
-        <button type="button" id="gallery-prev" aria-label="Previous agent screenshot" aria-controls="agent-gallery">‹</button>
-        <button type="button" id="gallery-next" aria-label="Next agent screenshot" aria-controls="agent-gallery">›</button>
-      </div>
-    </div>
-    <div id="agent-gallery" class="agent-gallery" tabindex="0" role="region" aria-label="Local agent screenshots; scroll horizontally to explore" aria-describedby="gallery-hint">
-      <figure class="agent-slide">
-        <img src="img/mac-live.png" width="1089" height="821" alt="The native AIHerd Mac app showing live terminal panes, summaries, and questions waiting for input in the session sidebar">
-        <figcaption><h3>See who needs you</h3><p>The native Mac app keeps your agents' live screens, summaries, and waiting questions together in one window.</p></figcaption>
-      </figure>
-      <figure class="agent-slide">
-        <img src="img/mac-topics.png" width="976" height="679" loading="lazy" alt="AIHerd's Mac session sidebar with shared-topic groups, working directories, agent filters, and a live terminal screen">
-        <figcaption><h3>Find related work</h3><p>Use shared-topic groups, or narrow the session sidebar by directory and agent.</p></figcaption>
-      </figure>
-      <figure class="agent-slide">
-        <img src="img/mac-history.png" width="2200" height="1640" loading="lazy" alt="The native Mac app's Past tab with a session activity chart, recorded sessions, and the selected session's summary and terminal output">
-        <figcaption><h3>Pick up past sessions</h3><p>Past sessions keep their summaries and captured screens. Revisit the work or open its pane.</p></figcaption>
-      </figure>
-    </div>
-    <p id="gallery-hint" class="gallery-hint">Scroll sideways or swipe to explore.</p>
-  </div>
-</section>
-
-<section id="remote-access" class="feature-section remote-section" aria-labelledby="remote-heading">
-  <div class="feature-wrap">
-    <div class="section-heading">
-      <div>
-        <h2 id="remote-heading">Ask the herd on the go</h2>
-        <p>Reach the AI on your laptop from your phone. Your agents keep working in the same sessions.</p>
-      </div>
-    </div>
-    <figure class="remote-demo">
-      <video controls playsinline preload="metadata" poster="img/ssh-wifi-roaming.jpg" width="1034" height="582" aria-label="Recording of an aih SSH session staying alive through a network interruption" aria-describedby="roaming-caption">
-        <source src="video/ssh-wifi-roaming.mp4" type="video/mp4">
-        <a href="video/ssh-wifi-roaming.mp4">Watch the SSH connection recording.</a>
-      </video>
-      <figcaption id="roaming-caption">Through <code>aih</code>, your SSH connection stays alive even after switching Wi-Fi.</figcaption>
-    </figure>
-    <div class="remote-details">
-      <div class="remote-copy">
-        <h3>Send a prompt from your mobile</h3>
-        <p>Read the latest output, give an agent its next prompt, or answer a question while you're away. When you return to your laptop, continue in the same session.</p>
-        <h3>Your laptop, within reach</h3>
-        <p>Keep a terminal session going through network changes, access your Mac's desktop through VNC, or use standard SSH, SCP, and rsync. Browse and transfer files with <a href="https://cyberduck.io/">Cyberduck</a>.</p>
-      </div>
-      <figure class="herd-connection">
-        <img src="img/mac-connection.png" width="808" height="1078" loading="lazy" alt="The native Mac app's herd cloud connection menu with relay status, screen sharing, mobile and website links, and connection traffic">
-        <figcaption>The herd connection menu in the Mac app.</figcaption>
-      </figure>
-    </div>
   </div>
 </section>
 
@@ -260,39 +305,6 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\aiherd-instal
     document.getElementById("beta-form").hidden = true;
     document.getElementById("beta-thanks").hidden = false;
   }
-
-  const gallery = document.getElementById("agent-gallery");
-  const slides = [...gallery.querySelectorAll(".agent-slide")];
-  const previous = document.getElementById("gallery-prev");
-  const next = document.getElementById("gallery-next");
-  const position = document.getElementById("gallery-position");
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  let activeSlide = 0;
-  const slidePosition = (slide) => slide.getBoundingClientRect().left - gallery.getBoundingClientRect().left + gallery.scrollLeft;
-  function updateGallery() {
-    activeSlide = slides.reduce((nearest, slide, index) =>
-      Math.abs(slidePosition(slide) - gallery.scrollLeft) <
-      Math.abs(slidePosition(slides[nearest]) - gallery.scrollLeft) ? index : nearest, 0);
-    position.textContent = `${activeSlide + 1} / ${slides.length}`;
-    previous.disabled = activeSlide === 0;
-    next.disabled = activeSlide === slides.length - 1;
-  }
-  function moveGallery(index) {
-    gallery.scrollTo({left: slidePosition(slides[index]),
-      behavior: reducedMotion.matches ? "instant" : "smooth"});
-  }
-  previous.addEventListener("click", () => moveGallery(Math.max(0, activeSlide - 1)));
-  next.addEventListener("click", () => moveGallery(Math.min(slides.length - 1, activeSlide + 1)));
-  gallery.addEventListener("keydown", (event) => {
-    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
-    event.preventDefault();
-    moveGallery(event.key === "Home" ? 0 : event.key === "End" ? slides.length - 1 :
-      Math.max(0, Math.min(slides.length - 1, activeSlide + (event.key === "ArrowRight" ? 1 : -1))));
-  });
-  gallery.addEventListener("scroll", updateGallery, {passive: true});
-  window.addEventListener("resize", updateGallery);
-  document.querySelector(".gallery-controls").hidden = false;
-  updateGallery();
 
   const tabs = [...document.querySelectorAll('[role="tab"][data-platform]')];
   function selectPlatform(platform, focus = false) {
