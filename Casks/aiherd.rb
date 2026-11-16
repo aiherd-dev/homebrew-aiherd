@@ -40,6 +40,23 @@ cask "aiherd" do
   # and runs uninstall directives during every upgrade.
   uninstall quit: ["dev.aiherd.AIHerd"]
 
+  # The herd is a login service (dev.aiherd.herd), started here so a brew
+  # install needs no app launch. Not `uninstall launchctl:`: it probes through
+  # sudo and gives the herd one second, and the herd needs to park its ssh
+  # sessions first. Brew runs this on every upgrade too; the owned terminals
+  # stay with the keeper and the new herd adopts them in postflight.
+  uninstall_preflight do
+    system_command "#{appdir}/AIHerd.app/Contents/MacOS/aih",
+                   args: ["uninstall-launchd"], must_succeed: false
+  end
+
+  # Fails without a GUI login session (brew over ssh); the app, or
+  # `aih install-launchd` at the Mac, does it then.
+  postflight do
+    system_command "#{appdir}/AIHerd.app/Contents/MacOS/aih",
+                   args: ["install-launchd"], must_succeed: false
+  end
+
   # The text index, settings and downloaded model weights the CLI builds at
   # runtime; `brew uninstall --zap` removes them, plain uninstall leaves them.
   zap trash: [
@@ -48,9 +65,10 @@ cask "aiherd" do
   ]
 
   caveats <<~EOS
-    Just open AIHerd.app — it starts `aih serve` itself
-    (over a Unix socket; no TCP port is taken). To also reach the dashboard
-    from a phone/browser, run `aih serve -p 8080` yourself.
+    The herd (`aih serve`) now runs as a login service, dev.aiherd.herd,
+    over a Unix socket; AIHerd.app is its window. Upgrades restart it and
+    keep its terminals and ssh sessions. To stop it for good:
+      aih uninstall-launchd
 
     The stable-terminal summarizer needs Apple Silicon with 16 GB or more. On
     first use it downloads the model (~2.5 GB) into
