@@ -299,7 +299,9 @@ $work=Join-Path ([IO.Path]::GetTempPath()) ('aih-install-'+[Guid]::NewGuid().ToS
 New-Item -ItemType Directory $work | Out-Null
 try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
-    if($PSCmdlet.ParameterSetName -eq 'Download'){
+    # Invoke-Expression does not create $PSCmdlet, even with CmdletBinding.
+    # Parameter binding requires both offline paths when ArchivePath is supplied.
+    if(-not $ArchivePath){
         if(-not $Version){
             $release=Invoke-RestMethod -Uri 'https://api.github.com/repos/aiherd-dev/homebrew-aiherd/releases/latest' -Headers @{'User-Agent'='AIHerd-Windows-Installer'} -TimeoutSec 60
             $Version=$release.tag_name
