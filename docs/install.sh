@@ -12,7 +12,11 @@ case "$(uname -m)" in
   aarch64|arm64) arch=aarch64 ;;
   *) fail 'Linux releases support x86_64 and aarch64 (ARM64).' ;;
 esac
-for tool in curl tar sha256sum awk grep install mktemp systemctl loginctl seq id; do need "$tool"; done
+for tool in curl tar sha256sum awk grep install mktemp seq id; do need "$tool"; done
+systemd=no
+if [ -d /run/systemd/system ] && command -v systemctl >/dev/null 2>&1 && command -v loginctl >/dev/null 2>&1; then
+  systemd=yes
+fi
 
 repo=https://github.com/aiherd-dev/homebrew-aiherd
 version=${AIHERD_VERSION:-}
@@ -70,6 +74,21 @@ for binary in aih aih-tty aih-fdkeeper aih-rdpauth; do
 done
 "$work/package/bin/aih" --version
 
+bindir=${AIHERD_BIN_DIR:-$HOME/.local/bin}
+case "$bindir" in /*) ;; *) fail 'AIHERD_BIN_DIR must be an absolute path.' ;; esac
+mkdir -p "$bindir"
+for binary in aih aih-tty aih-fdkeeper aih-rdpauth; do
+  install -m 755 "$work/package/bin/$binary" "$bindir/.$binary-install-$$"
+  mv -f "$bindir/.$binary-install-$$" "$bindir/$binary"
+done
+if [ "$systemd" = no ]; then
+  printf '\nNo systemd here: AIHerd is installed in %s and runs in the foreground.\n' "$bindir"
+  rm -rf "$work"
+  trap - EXIT
+  if [ "$#" -gt 0 ]; then exec "$bindir/aih" "$@"; fi
+  exec "$bindir/aih" serve
+fi
+
 # Linger starts the user manager on boot and keeps it after the SSH session ends.
 username=$(id -un)
 linger=$(loginctl show-user "$username" --property=Linger --value 2>/dev/null || true)
@@ -88,13 +107,6 @@ for attempt in $(seq 1 30); do
 done
 systemctl --user show-environment >/dev/null 2>&1 || fail 'No systemd user manager is available. Reconnect with SSH after enabling lingering, then rerun the installer.'
 
-bindir=${AIHERD_BIN_DIR:-$HOME/.local/bin}
-case "$bindir" in /*) ;; *) fail 'AIHERD_BIN_DIR must be an absolute path.' ;; esac
-mkdir -p "$bindir"
-for binary in aih aih-tty aih-fdkeeper aih-rdpauth; do
-  install -m 755 "$work/package/bin/$binary" "$bindir/.$binary-install-$$"
-  mv -f "$bindir/.$binary-install-$$" "$bindir/$binary"
-done
 "$bindir/aih" install-systemd
 config=${XDG_CONFIG_HOME:-$HOME/.config}
 case "$config" in /*) ;; *) config=$HOME/.config ;; esac
@@ -134,4 +146,9 @@ case ":$PATH:" in
   *":$bindir:"*) ;;
   *) printf '\nAdd the installed commands to this shell:\n  export PATH=%q:"$PATH"\n' "$bindir" ;;
 esac
+if [ "$#" -gt 0 ]; then
+  rm -rf "$work"
+  trap - EXIT
+  exec "$bindir/aih" "$@"
+fi
 printf '\n1. Sign in to expose the herd:\n  aih login\n\nOpen the printed sign-in URL on your phone or another computer.\n\n2. Add your mobile device:\n  aih join\n\nScan the QR code or open the link, then approve pairing in this terminal.\n\nService status: systemctl --user status aih.service\nLogs: journalctl --user -u aih.service -f\n'
