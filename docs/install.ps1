@@ -4,8 +4,8 @@
 Install AIHerd for this Windows account or as a system service.
 .PARAMETER UserMode
 Install without elevation under LocalAppData/Programs/AIHerd, using only a user
-Start-menu shortcut and user PATH. The UI offers an explicit user-gateway start;
-installation never starts one or changes the installed system service.
+Start-menu shortcut and user PATH. Opening AIHerd starts or reuses the
+signed-in account's gateway.
 .EXAMPLE
 .\install-windows.ps1 -UserMode
 .EXAMPLE
@@ -26,6 +26,8 @@ param(
     [string]$Relay = 'wss://oci01.aiherd.dev',
     # Defaults to the installing account, or preserves an existing desktop owner.
     [string]$DesktopUserSid,
+    # Authorize this account's ordinary desktop terminals for the Windows herd.
+    [ValidateSet('','View','Control','Off')][string]$DesktopCapture,
     # An offline archive still needs an installed WebView2 Runtime, or internet access to install it.
     [Parameter(Mandatory=$true,ParameterSetName='Offline')][string]$ArchivePath,
     [Parameter(Mandatory=$true,ParameterSetName='Offline')][string]$ChecksumPath,
@@ -126,7 +128,7 @@ if($arch -ne 'AMD64'){throw 'This package requires x64 Windows.'}
 if([Environment]::OSVersion.Version.Build -lt 17763){throw 'Windows 10 1809 / Server 2019 or newer is required.'}
 if($UserMode){
     if($identity.User.Value -notmatch '^S-1-(?:5-21|12-1)-'){throw '-UserMode requires a signed-in Windows user account.'}
-    foreach($argument in @('Root','ServiceName','Relay','DesktopUserSid')){
+    foreach($argument in @('Root','ServiceName','Relay','DesktopUserSid','DesktopCapture')){
         if($PSBoundParameters.ContainsKey($argument)){throw "-$argument belongs to the system-service installer. Omit it with -UserMode."}
     }
     if(-not $PSBoundParameters.ContainsKey('InstallDir')){$InstallDir=Join-Path $env:LOCALAPPDATA 'Programs\AIHerd'}
@@ -270,10 +272,106 @@ function Install-AIHCurrentUserPayload {
     $shortcut.WorkingDirectory=Join-Path $destination 'ui'
     $shortcut.Description='AIHerd for this Windows account'
     $shortcut.Save()
-    Write-Host "Open $shortcutName from your Start menu. Choose Use this Windows session and Connect to start your own gateway."
+    Write-Host "Open $shortcutName from your Start menu to see terminals in this Windows session."
     Write-Host 'The UI is updated. Any running user gateway continues until you explicitly restart it.'
     Write-Host ('Gateway executable: '+(Join-Path $destination 'aih.exe'))
     Write-Host 'The selected version is on your user PATH for new terminals. Existing package versions are retained while apps may still use them.'
+}
+
+function Get-AIHInteractiveAccounts {
+    if(-not ('AIHerd.InstallSessions' -as [type])){
+        Add-Type -TypeDefinition @'
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
+namespace AIHerd {
+    public static class InstallSessions {
+        [StructLayout(LayoutKind.Sequential)] struct Entry { public int Id; public IntPtr Station; public int State; }
+        [DllImport("wtsapi32.dll", CharSet=CharSet.Unicode, SetLastError=true)] static extern bool WTSEnumerateSessionsW(IntPtr server,int reserved,int version,out IntPtr entries,out int count);
+        [DllImport("wtsapi32.dll", CharSet=CharSet.Unicode, SetLastError=true)] static extern bool WTSQuerySessionInformationW(IntPtr server,int session,int kind,out IntPtr value,out int bytes);
+        [DllImport("wtsapi32.dll")] static extern void WTSFreeMemory(IntPtr value);
+        static string Read(int session,int kind){
+            IntPtr value;int bytes;
+            if(!WTSQuerySessionInformationW(IntPtr.Zero,session,kind,out value,out bytes))return "";
+            try{return Marshal.PtrToStringUni(value)??"";}finally{WTSFreeMemory(value);}
+        }
+        public static Dictionary<int,string> Accounts(){
+            IntPtr entries;int count;
+            var result=new Dictionary<int,string>();
+            if(!WTSEnumerateSessionsW(IntPtr.Zero,0,1,out entries,out count))throw new System.ComponentModel.Win32Exception();
+            try{
+                for(int i=0;i<count;i++){
+                    var entry=(Entry)Marshal.PtrToStructure(IntPtr.Add(entries,i*Marshal.SizeOf(typeof(Entry))),typeof(Entry));
+                    if(entry.Id==0)continue;
+                    var name=Read(entry.Id,5);var domain=Read(entry.Id,7);
+                    if(name.Length==0)continue;
+                    try{result[entry.Id]=new NTAccount(domain,name).Translate(typeof(SecurityIdentifier)).Value;}
+                    catch(IdentityNotMappedException){}
+                }
+            }finally{WTSFreeMemory(entries);}
+            return result;
+        }
+    }
+}
+'@
+    }
+    return [AIHerd.InstallSessions]::Accounts()
+}
+
+function Start-AIHDesktopTask {
+    param([string]$TaskName,[string]$Sid)
+    $scheduler=New-Object -ComObject 'Schedule.Service'
+    $scheduler.Connect()
+    $task=$scheduler.GetFolder('\').GetTask($TaskName)
+    foreach($pair in (Get-AIHInteractiveAccounts).GetEnumerator()){
+        if($pair.Value -eq $Sid){$null=$task.RunEx($null,4,[int]$pair.Key,$null)}
+    }
+}
+
+function Set-AIHDesktopTask {
+    param([string]$Mode,[string]$Sid,[string]$Helper,[string]$TaskName,[string]$Account)
+    $existing=Get-ScheduledTask -TaskName $TaskName -TaskPath '\' -ErrorAction SilentlyContinue
+    $previous=$null
+    if($existing){
+        $actions=@($existing.Actions)
+        $expectedRoot=(Join-Path $InstallDir 'ui')+'\'
+        if($actions.Count -ne 1 -or -not ([IO.Path]::GetFullPath($actions[0].Execute)).StartsWith($expectedRoot,[StringComparison]::OrdinalIgnoreCase) -or
+            (Split-Path -Leaf $actions[0].Execute) -ine 'aih-tty.exe' -or $actions[0].Arguments -notmatch ('^desktop-capture --service '+[regex]::Escape($ServiceName)+' --user-sid (S-[0-9-]+)(?: --control)?$')){
+            throw 'The desktop task name belongs to another application.'
+        }
+        $previousSid=$Matches[1]
+        $previous=Export-ScheduledTask -TaskPath '\' -TaskName $TaskName
+    }
+    try {
+        if($existing){Stop-ScheduledTask -InputObject $existing}
+        if($Mode -eq 'Off'){
+            if($existing){Unregister-ScheduledTask -InputObject $existing -Confirm:$false}
+        } else {
+            $argsText="desktop-capture --service $ServiceName --user-sid $Sid"
+            if($Mode -eq 'Control'){$argsText+=' --control'}
+            $action=New-ScheduledTaskAction -Execute $Helper -Argument $argsText
+            $principal=New-ScheduledTaskPrincipal -UserId $Sid -LogonType Interactive -RunLevel Limited
+            $trigger=New-ScheduledTaskTrigger -AtLogOn -User $Account
+            $settings=New-ScheduledTaskSettingsSet -MultipleInstances Parallel -ExecutionTimeLimit ([TimeSpan]::Zero) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)
+            Register-ScheduledTask -TaskName $TaskName -TaskPath '\' -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Description "AIHerd desktop terminal access for $Account" -Force|Out-Null
+            Start-AIHDesktopTask -TaskName $TaskName -Sid $Sid
+        }
+        # The helper verifies its peer and waits for this grant. A task failure
+        # cannot expand an earlier grant to another user or to terminal control.
+        & $binary service desktop-capture --name $ServiceName --user-sid $Sid --access $Mode.ToLowerInvariant()
+        if($LASTEXITCODE -ne 0){throw 'Desktop authorization failed.'}
+    } catch {
+        $candidate=Get-ScheduledTask -TaskName $TaskName -TaskPath '\' -ErrorAction SilentlyContinue
+        if($candidate){Stop-ScheduledTask -InputObject $candidate}
+        if($previous){
+            Register-ScheduledTask -TaskName $TaskName -TaskPath '\' -Xml $previous -Force|Out-Null
+            Start-AIHDesktopTask -TaskName $TaskName -Sid $previousSid
+        } elseif($candidate){
+            Unregister-ScheduledTask -InputObject $candidate -Confirm:$false
+        }
+        throw
+    }
 }
 
 $binary=Join-Path $InstallDir 'aih.exe'
@@ -282,9 +380,17 @@ if(-not $UserMode){
 $service=Get-CimInstance Win32_Service | Where-Object Name -eq $ServiceName
 if(-not $DesktopUserSid){
     if($service -and $service.PathName -match '--desktop-user-sid\s+"?(S-[0-9-]+)'){$DesktopUserSid=$Matches[1]}
-    else {$DesktopUserSid=$identity.User.Value}
+    else {
+        $desktopAccounts=Get-AIHInteractiveAccounts
+        $session=[Diagnostics.Process]::GetCurrentProcess().SessionId
+        $DesktopUserSid=if($desktopAccounts.ContainsKey($session)){$desktopAccounts[$session]}elseif($identity.User.Value -match '^S-1-(?:5-21|12-1)-'){$identity.User.Value}
+    }
 }
-$DesktopUserSid=([Security.Principal.SecurityIdentifier]::new($DesktopUserSid)).Value
+if($DesktopUserSid){
+    $DesktopUserSid=([Security.Principal.SecurityIdentifier]::new($DesktopUserSid)).Value
+} elseif($DesktopCapture -in @('View','Control')){
+    throw 'Choose the Windows account with -DesktopUserSid when installing outside a user session.'
+}
 if($service){
     # Do not take over a same-named service belonging to another installation.
     $command=$service.PathName
@@ -303,8 +409,19 @@ try {
     # Parameter binding requires both offline paths when ArchivePath is supplied.
     if(-not $ArchivePath){
         if(-not $Version){
-            $release=Invoke-RestMethod -Uri 'https://api.github.com/repos/aiherd-dev/homebrew-aiherd/releases/latest' -Headers @{'User-Agent'='AIHerd-Windows-Installer'} -TimeoutSec 60
-            $Version=$release.tag_name
+            $page=1
+            do {
+                $releases=Invoke-RestMethod -Uri ("https://api.github.com/repos/aiherd-dev/homebrew-aiherd/releases?per_page=30&page="+$page) -Headers @{'User-Agent'='AIHerd-Windows-Installer'} -TimeoutSec 60
+                foreach($release in $releases){
+                    if($release.draft -or $release.prerelease -or $release.tag_name -notmatch '^v(\d+\.\d+\.\d+)$'){continue}
+                    $candidate=$Matches[1]
+                    $asset="aiherd-$candidate-x86_64-windows-remote.zip"
+                    $names=@($release.assets|ForEach-Object {$_.name})
+                    if($names -contains $asset -and $names -contains ($asset+'.sha256')){$Version=$candidate;break}
+                }
+                $page++
+            } while(-not $Version -and @($releases).Count -eq 30)
+            if(-not $Version){throw 'No stable Windows release with a ZIP and SHA-256 checksum was found.'}
         }
         $Version=$Version -replace '^v',''
         if($Version -notmatch '^\d+\.\d+\.\d+$'){throw 'Version must be a stable version such as 0.5.21.'}
@@ -353,7 +470,10 @@ try {
             }
         }
     } finally { $zip.Dispose() }
-    # A per-user install must offer the explicit user-session gateway flow.
+    if($DesktopCapture -in @('View','Control') -and -not $hasUi){
+        throw 'Desktop terminal authorization requires a Windows release with the desktop UI.'
+    }
+    # A per-user install requires the bundled user-session gateway.
     $desktopHost=if($hasUi){Get-AIHDesktopHostManifest -UiDirectory $uiStage}else{$null}
     if($UserMode -and ($null -eq $desktopHost -or -not $desktopHost.user_gateway)){
         throw 'This package does not support per-user installation. Download a current AIHerd Windows package with the user-session gateway feature; version 0.5.24 and older native UI packages require the system installer.'
@@ -365,6 +485,29 @@ try {
     foreach($program in $programs){
         & (Join-Path $work $program) --version
         if($LASTEXITCODE -ne 0){throw "$program failed its version check."}
+    }
+
+    $captureMode=$null
+    if(-not $UserMode -and $hasUi){
+        $captureReady=Test-Path -LiteralPath (Join-Path $uiStage 'desktop-capture-v1.json') -PathType Leaf
+        if($DesktopCapture -and -not $captureReady -and $DesktopCapture -ne 'Off'){throw 'This Windows release does not support installer-authorized desktop capture.'}
+        if($captureReady -and $DesktopUserSid){
+            $captureMode=$DesktopCapture
+            $accountName=try {([Security.Principal.SecurityIdentifier]::new($DesktopUserSid)).Translate([Security.Principal.NTAccount]).Value}catch{$DesktopUserSid}
+            if(-not $captureMode -and $service -and $service.PathName -match ('--desktop-user-sid\s+"?'+[regex]::Escape($DesktopUserSid)+'"?(?:\s|$)') -and
+                $service.PathName -match '--desktop-capture\s+(view|control|off)(?:\s|$)'){
+                $captureMode=$Matches[1]
+            }
+            $currentSession=[Diagnostics.Process]::GetCurrentProcess().SessionId
+            if(-not $captureMode -and -not $Scratch -and $currentSession -gt 0 -and -not [Console]::IsInputRedirected){
+                Write-Host "AIHerd can show ordinary terminals belonging to $accountName on this PC and on devices paired with this herd. Control also permits sending commands. Open dashboard listeners will require pairing."
+                $choice=Read-Host 'Choose V to allow viewing, C to allow viewing and control, or Enter for service only'
+                $captureMode=switch($choice.Trim().ToUpperInvariant()){'V'{'View'} 'C'{'Control'} ''{'Off'} default{throw 'Unknown desktop authorization choice.'}}
+            }
+            if($captureMode -and $captureMode -ne 'Off'){
+                Write-Host "Desktop grant for $accountName on $ServiceName and its full-access paired devices: $captureMode. Open dashboard listeners require pairing."
+            }
+        }
     }
 
     if($UserMode){
@@ -398,6 +541,19 @@ try {
         }
         @{pipe=('\\.\pipe\aiherd-service-'+$ServiceName)} | ConvertTo-Json | Set-Content -Encoding UTF8 (Join-Path $uiDestination 'service.json')
     }
+    $helper=''
+    $taskName="AIHerd Desktop $ServiceName"
+    if($captureMode -in @('View','Control')){
+        $captureDirectory=Join-Path $uiDestination 'capture'
+        if((Test-Path -LiteralPath $captureDirectory) -and ((Get-Item -Force -LiteralPath $captureDirectory).Attributes -band [IO.FileAttributes]::ReparsePoint)){throw 'Unexpected capture reparse point'}
+        New-Item -ItemType Directory -Force $captureDirectory|Out-Null
+        $helper=Join-Path $captureDirectory 'aih-tty.exe'
+        $source=Join-Path $work 'aih-tty.exe'
+        if(-not(Test-Path -LiteralPath $helper)){Copy-Item -LiteralPath $source -Destination $helper}
+        if((Get-FileHash -LiteralPath $source).Hash -ne (Get-FileHash -LiteralPath $helper).Hash){throw 'Versioned desktop helper failed verification'}
+    }
+    & icacls.exe $InstallDir /setowner '*S-1-5-32-544' /T /C | Out-Null
+    if($LASTEXITCODE -ne 0){throw 'Could not protect ownership of installed program files'}
     if($service){
         # The installed CLI owns preflight, graceful stop, mapped-image
         # replacement, readiness verification and rollback as one transaction.
@@ -412,11 +568,12 @@ try {
         $created=$false
         try {
             $installArgs=@('service','install','--name',$ServiceName,'--root',$Root,'--proxy',$Relay)
-            if($hasUi){$installArgs+=@('--desktop-user-sid',$DesktopUserSid)}
+            if($hasUi -and $DesktopUserSid){$installArgs+=@('--desktop-user-sid',$DesktopUserSid)}
             if($Scratch){$installArgs+='--scratch'}
             & $binary @installArgs
             if($LASTEXITCODE -ne 0){throw 'Service installation failed.'}
             $created=$true
+            if($captureMode){Set-AIHDesktopTask -Mode $captureMode -Sid $DesktopUserSid -Helper $helper -TaskName $taskName -Account $accountName}
             & $binary service start --name $ServiceName
             if($LASTEXITCODE -ne 0){throw 'Service start failed.'}
             $running=$false
@@ -434,10 +591,12 @@ try {
         }
     }
     if($hasUi){
-        & $binary service desktop-access --name $ServiceName --user-sid $DesktopUserSid
-        if($LASTEXITCODE -ne 0){throw 'Desktop service access configuration failed; existing shortcut was preserved.'}
-        & icacls.exe $InstallDir /setowner '*S-1-5-32-544' /T /C | Out-Null
-        if($LASTEXITCODE -ne 0){throw 'Could not protect ownership of installed program files'}
+        if($service -and $captureMode){
+            Set-AIHDesktopTask -Mode $captureMode -Sid $DesktopUserSid -Helper $helper -TaskName $taskName -Account $accountName
+        } elseif($service -and $DesktopUserSid){
+            & $binary service desktop-access --name $ServiceName --user-sid $DesktopUserSid
+            if($LASTEXITCODE -ne 0){throw 'Desktop service access configuration failed.'}
+        }
         $shortcutName=if($ServiceName -eq 'AIHerd'){'AIHerd'}else{'AIHerd-'+$ServiceName}
         $shortcutPath=Join-Path ([Environment]::GetFolderPath('CommonPrograms')) ($shortcutName+'.lnk')
         $shell=New-Object -ComObject WScript.Shell
@@ -450,10 +609,13 @@ try {
     }
     Add-InstallDirToPath
     $suffix=if($ServiceName -eq 'AIHerd'){''}else{' --socket \\.\pipe\aiherd-service-'+$ServiceName}
-    Write-Host "AIHerd is installed and running as LocalService (automatic startup)."
+    Write-Host "AIHerd is installed and running with automatic startup."
     Write-Host "aih is available on PATH in new terminals. Open a new PowerShell window to use it."
-    Write-Host "Complete browser sign-in, then pair your phone:"
-    Write-Host "& '$binary' login$suffix"
-    Write-Host "& '$binary' join$suffix"
-    Write-Host 'Upgrades preserve service settings, credentials, and active SSH connections.'
+    if($service){
+        Write-Host 'Existing phone pairings and service settings are preserved.'
+    } else {
+        Write-Host "To pair a phone, sign in and open the pairing link:"
+        Write-Host "& '$binary' login$suffix"
+        Write-Host "& '$binary' join$suffix"
+    }
 } finally { Remove-Item -LiteralPath $work -Recurse -Force -ErrorAction SilentlyContinue }
